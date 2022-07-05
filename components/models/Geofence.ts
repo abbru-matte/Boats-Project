@@ -13,8 +13,7 @@ export const Geofence = sequelize.define('geofences', {
         primaryKey: true,
     },
     geometria: {
-        type: DataTypes.GEOMETRY(),
-        primaryKey: true,
+        type: DataTypes.GEOMETRY()
     },
     vel_max: {
         type: DataTypes.INTEGER(),
@@ -26,3 +25,17 @@ export const Geofence = sequelize.define('geofences', {
     timestamps: false,
     freezeTableName: true
 });
+/**
+ * Cerca la corrispondenza nella tabella geofences
+ * @param nome_area nome della geofence da cercare
+ * @returns  Ritorna il risultato della ricerca
+ */
+ export async function findGeofence(nome_area:string):Promise<any> {
+    let result:any;
+    try{
+        result = await Geofence.findByPk(nome_area,{raw:true});
+    }catch(error){
+        console.log(error);
+    }
+    return result;
+};

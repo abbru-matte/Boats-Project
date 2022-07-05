@@ -27,6 +27,14 @@ app.post('/creaImbarcazione', auth.checkRoleAdmin,validator.checkUserJWT,validat
 app.post('/creaGeofence', auth.checkRoleAdmin,validator.checkUserJWT,validator.checkPostGeofence, errorHandler, (req, res) => {
        responses.successResponsePOST(res);
 });
+//Rotta admin per l'inserimento di una nuova associazione tra geofence area e imbarcazione tramite POST
+app.post('/creaAssociazione', auth.checkRoleAdmin,validator.checkUserJWT,validator.checkPostAssociazione, errorHandler, (req, res) => {
+       responses.successResponsePOST(res);
+});
+//Rotta admin per la rimozione di una associazione esistente tra geofence area e imbarcazione tramite DELETE
+app.delete('/deleteAssociazione', auth.checkRoleAdmin,validator.checkUserJWT,validator.checkDeleteAssociazione, errorHandler, (req, res) => {
+       responses.successResponsePOST(res);
+});
 //Rotta admin per ottenere tutte le imbarcazioni tramite GET
 app.get('/getAllImbarcazioni', auth.checkRoleAdmin,validator.checkUserJWT,validator.getAllImbarcazioni, errorHandler, (req, res) => {
        responses.successResponseGET(res);
@@ -39,6 +47,11 @@ app.get('/getAllGeofences', auth.checkRoleAdmin,validator.checkUserJWT,validator
 app.get('/getAllUsers', auth.checkRoleAdmin,validator.checkUserJWT,validator.getAllUsers, errorHandler, (req, res) => {
        responses.successResponseGET(res);
 });
+//Rotta admin per ottenere tutte le associazioni tramite GET
+app.get('/getAllAssociazioni', auth.checkRoleAdmin,validator.checkUserJWT,validator.getAllAssociazioni, errorHandler, (req, res) => {
+       responses.successResponseGET(res);
+});
+
 
 //Rotta not found per le richieste GET di rotte non esistenti
 app.get('*', function(req, res){
@@ -52,6 +65,16 @@ app.get('*', function(req, res){
 });
 //Rotta not found per le richieste POST di rotte non esistenti
 app.post('*', function(req, res){
+       res.header("Content-Type", "application/json");
+       const response = new ResponseHttpBuilder();
+       let json = JSON.stringify(response.setStatusCode(404)
+                      .setStatus("Not found")
+                      .setMessage("Rotta non trovata")
+                      .build());
+       res.status(res.statusCode).send(json);
+});
+//Rotta not found per le richieste DELETE di rotte non esistenti
+app.delete('*', function(req, res){
        res.header("Content-Type", "application/json");
        const response = new ResponseHttpBuilder();
        let json = JSON.stringify(response.setStatusCode(404)

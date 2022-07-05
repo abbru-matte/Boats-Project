@@ -2,6 +2,7 @@
 import * as Imbarcazioni from "../models/Imbarcazione";
 import * as Users from "../models/User";
 import * as Geofences from "../models/Geofence";
+import * as Associazioni from "../models/Associazione";
 import * as typesValidator from "../utils/typesValidator"
 
 const { Op } = require("sequelize");
@@ -76,12 +77,43 @@ export async function checkPostGeofence (req:any,res:any,next:any){
             res.status_message = "Bad Request";
         }
         else{
-            if(!(errorResp instanceof Error)){
                 await Geofences.Geofence.create(req.body).then((geofences:any) =>{
                     res.message = "Geofence creata";
                     res.status_code = 200;
                     res.status_message = "STATUS OK";
                     res.data = {"nome_area":geofences.nome_area};
+                    next();
+                });
+        } 
+    }catch(error){
+        next(error)
+    }
+    next(errorResp);
+};
+/**
+ * Funzione che controlla e valida i dati inseriti per la nuova associazione 
+ * @param req richiesta
+ * @param res risposta
+ * @param next successivo
+ */
+ export async function checkPostAssociazione (req:any,res:any,next:any){
+    let errorResp:any;
+    try{
+        if(!typesValidator.validatorDatiAssociazione(req.body)){
+            errorResp = new Error("Inserire i dati del payload della richiesta in un formato valido")
+            res.status_code = 400;
+            res.status_message = "Bad Request";
+        }
+        else{
+            errorResp = await Associazioni.validatorBodyAssociazione(req.body);
+            if(!(errorResp instanceof Error)){
+                await Associazioni.Associazione.create(req.body).then((associazione:any) =>{
+                    res.message = "Associazione creata";
+                    res.status_code = 200;
+                    res.status_message = "STATUS OK";
+                    res.data = {"id_associazione":associazione.id_associazione,
+                                "nome_geofence": associazione.nome_geofence, 
+                                "mmsi_imbarcazione": associazione.mmsi_imbarcazione};
                     next();
                 });
             }
@@ -90,6 +122,37 @@ export async function checkPostGeofence (req:any,res:any,next:any){
         next(error)
     }
     next(errorResp);
+};
+/**
+ * Funzione che controlla e valida i dati inseriti per la rimozione di un'associazione esistente
+ * @param req richiesta
+ * @param res risposta
+ * @param next successivo
+ */
+ export async function checkDeleteAssociazione (req:any,res:any,next:any){
+    let response:any;
+    try{
+        if(!typesValidator.validatorDatiAssociazione(req.body)){
+            response = new Error("Inserire i dati del payload della richiesta in un formato valido")
+            res.status_code = 400;
+            res.status_message = "Bad Request";
+        }
+        else{
+            response = await Associazioni.validatorDeleteAssociazione(req.body);
+            if(!(response instanceof Error)){
+                await Associazioni.Associazione.destroy({ where: { id_associazione: response } }).then(() =>{
+                    res.message = "Associazione rimossa";
+                    res.status_code = 200;
+                    res.status_message = "STATUS OK";
+                    res.data = {"id_associazione":response};
+                    next();
+                });
+            }
+        } 
+    }catch(error){
+        next(error)
+    }
+    next(response);
 };
 /**
  * Funzione che restituisce tutte le imbarcazioni presenti nel DB
@@ -151,6 +214,29 @@ export async function getAllGeofences(req:any,res:any,next:any) {
             res.status_code = 200;
             res.status_message = "OK";
             res.data = {"Elenco geofences": geofences};
+            next();
+            });
+        
+        if(errorResp instanceof Error)
+            next(errorResp) 
+    }catch(error){
+        next(error)
+    }
+};
+/**
+ * Funzione che restituisce tutte le associazioni presenti nel DB
+ * @param req richiesta
+ * @param res risposta
+ * @param next successivo
+ */
+ export async function getAllAssociazioni(req:any,res:any,next:any) {
+    let errorResp:any;
+    try{
+            await Associazioni.Associazione.findAll().then((associazioni:any) =>{
+            res.message = "Richiesta avvenuta con successo";
+            res.status_code = 200;
+            res.status_message = "OK";
+            res.data = {"Elenco associazioni": associazioni};
             next();
             });
         

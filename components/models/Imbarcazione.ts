@@ -43,11 +43,9 @@ export const Imbarcazione = sequelize.define('imbarcazione',
 });
 
 /**
- * Funzione asincrona che controlla l'esistenza del proprietario 
- * dell'imbarcazione specificato nella richiesta
+ * Controlla l'esistenza del proprietario dell'imbarcazione specificato nella richiesta
  * @param imbarcazione contiene i dati dell'imbarcazione da validare
- * @returns True se la validazione è andata a buon fine, in caso contrario un oggetto Error
- * 
+ * @returns Ritorna true se la validazione è andata a buon fine, altrimenti l'errore relativo
  */
 
 export async function validatorBodyImbarcazione(imbarcazione:any):Promise<any>{
@@ -58,3 +56,17 @@ export async function validatorBodyImbarcazione(imbarcazione:any):Promise<any>{
     if(!check) return new Error("Il proprietario dell'imbarcazione deve essere un utente esistente");
     return true
 }
+/**
+ * Cerca la corrispondenza dell'mmsi nella tabella imbarcazioni
+ * @param mmsi mmsi dell'imbarcazione da cercare
+ * @returns Ritorna il risultato della ricerca
+ */
+ export async function findImbarcazione(mmsi:string):Promise<any> {
+    let result:any;
+    try{
+        result = await Imbarcazione.findByPk(mmsi,{raw:true});
+    }catch(error){
+        console.log(error);
+    }
+    return result;
+};

@@ -32,6 +32,21 @@ ALTER TABLE users
 ALTER TABLE geofences
   ADD PRIMARY KEY (nome_area);
 
+CREATE TABLE associazioni(
+  id_associazione SERIAL,
+  nome_geofence varchar(50) NOT NULL,
+  mmsi_imbarcazione INT NOT NULL,
+   CONSTRAINT fk_nome_geofence
+      FOREIGN KEY(nome_geofence) 
+	  REFERENCES geofences(nome_area),
+    CONSTRAINT fk_mmsi_imbarcazione
+      FOREIGN KEY(mmsi_imbarcazione) 
+	  REFERENCES imbarcazione(mmsi)
+  );
+
+  ALTER TABLE associazioni
+  ADD PRIMARY KEY (id_associazione);
+  
 INSERT INTO users (username, credito, ruolo, mail) 
   VALUES 
   ('mario_rossi', 1000, 'user','mario@rossi.com'), 
@@ -41,6 +56,11 @@ INSERT INTO users (username, credito, ruolo, mail)
   ('paolo_verdi', 1000, 'user','paolo@verdi.com'),
   ('nic_mori', 1000, 'user','nic@mori.com'),
   ('admin', 0, 'admin','admin@admin.com');
+
+INSERT INTO imbarcazione (mmsi, proprietario, nome_imbarcazione, lunghezza,peso,stato) 
+  VALUES 
+  (123456789, 'mario_rossi', 'Pinta',20,100,'stazionaria'), 
+  (123456798, 'luigi_bianchi', 'Nina',30,100,'stazionaria');
 
   INSERT INTO geofences (nome_area, geometria, vel_max) 
   VALUES 
@@ -80,3 +100,7 @@ INSERT INTO users (username, credito, ruolo, mail)
 	"type": "Point",
 	"coordinates": [-76.984722, 39.807222]
 }',20);
+INSERT INTO associazioni (nome_geofence,mmsi_imbarcazione) 
+  VALUES 
+  ('Gotham', 123456789), 
+  ('Marley', 123456798);

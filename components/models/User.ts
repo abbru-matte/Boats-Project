@@ -32,17 +32,17 @@ export const User = sequelize.define('users', {
 });
 
 /**
- * Verifica l'esistenza dell'user
- * @param username identificatore del giocatore
- * @returns  il risultato 
+ * Cerca la corrispondenza nella tabella users
+ * @param username username dell'utente da cercare
+ * @returns  Ritorna il risultato della ricerca
  */
 export async function findUser(username:string):Promise<any> {
-    let check:any;
+    let result:any;
     try{
-        check = await User.findByPk(username,{raw:true});
+        result = await User.findByPk(username,{raw:true});
     }catch(error){
-        console.log(error);
+        result.log(error);
     }
-    return check;
+    return result;
 };
 

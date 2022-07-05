@@ -20,3 +20,10 @@ export const validatorDatiGeofence = (geofence:any):boolean => {
         geofence.geometria.type === "Polygon"  )
       }   
 };
+
+export const validatorDatiAssociazione = (associazione:any):boolean => {
+ 
+    return (typeof associazione.nome_geofence == "string" &&
+    (Number.isInteger(associazione.mmsi_imbarcazione) && associazione.mmsi_imbarcazione>0 ))
+  
+};
