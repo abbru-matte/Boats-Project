@@ -1,0 +1,40 @@
+{
+  "name": "boats-project",
+  "version": "1.0.0",
+  "description": "PA Project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abbru-matte/Boats-Project.git"
+  },
+  "contributors": [
+    "Daniele Pallini",
+    "Matteo Abbruzzetti"
+  ],
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/abbru-matte/Boats-Project/issues"
+  },
+  "homepage": "https://github.com/abbru-matte/Boats-Project#readme",
+  "dependencies": {
+    "@types/node": "^17.0.40",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "jsonwebtoken": "^8.5.1",
+    "pg": "^8.7.3",
+    "pg-hstore": "^2.3.4",
+    "postgres": "^3.2.4",
+    "rxjs": "^7.5.5",
+    "sequelize": "^6.21.1",
+    "typescript": "^4.7.4"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/node": "^17.0.40",
+    "nodemon": "^2.0.18",
+    "sequelize-cli": "^6.4.1"
+  }
+}

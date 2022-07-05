@@ -1,0 +1,9 @@
+FROM postgres:14.4
+
+#Install postgis extension
+RUN apt-get update && apt-get install -y postgresql-14-postgis-3
+
+#Enable postgis for our db
+#RUN psql pet_food_db -c "CREATE EXTENSION postgis";
+
+CMD ["/usr/local/bin/docker-entrypoint.sh","postgres"]
