@@ -18,9 +18,11 @@ export class DatabaseSingleton {
 			dialect: 'postgres',
             dialectOptions: {
                 dateStrings: true,
-                typeCast: true
+                typeCast: true,
+                timezone: "+2:00"
               },
-            logging:false
+            logging:false,
+            timezone: "+2:00"
 		});
 	}
 

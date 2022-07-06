@@ -60,6 +60,25 @@ export const checkRoleAdmin = (req,res,next) => {
         next(error);
     }
 };
+/**
+ * Funzione che verifica che il token JWT contenga nel payload il ruolo user
+ * @param req richiesta
+ * @param res risposta
+ * @param next successivo
+ */
+export const checkRoleUser = (req,res,next) => {
+    try{  
+        if(req.param === "user"){
+            req.username = req.user;
+            next();
+        }else{
+            let error = new Error("Solo un utente con ruolo user può eseguire questa operazione") 
+            next(error);
+        }
+    }catch(error){
+        next(error);
+    }
+};
 
 /**
  * Funzione che controlla la presenza del bearerToken JWT

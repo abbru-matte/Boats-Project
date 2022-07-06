@@ -27,3 +27,13 @@ export const validatorDatiAssociazione = (associazione:any):boolean => {
     (Number.isInteger(associazione.mmsi_imbarcazione) && associazione.mmsi_imbarcazione>0 ))
   
 };
+
+export const validatorDatiIstantanei = (dati:any):boolean => {
+ 
+    return (typeof dati.stato == "string" && (dati.stato == "in navigazione" ||  dati.stato == "in pesca" ||  dati.stato == "stazionaria") &&
+    (Number.isInteger(dati.mmsi) && dati.mmsi>0 && dati.mmsi.toString().length == 9) &&
+    (!isNaN(parseFloat(dati.latitudine)) && dati.latitudine>-90 && dati.latitudine<90 ) &&
+    (!isNaN(parseFloat(dati.longitudine)) && dati.longitudine>-180 && dati.longitudine<180 ) && 
+    (!isNaN(parseFloat(dati.velocità)) && dati.velocità>0 ))
+  
+};

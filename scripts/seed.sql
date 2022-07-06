@@ -5,8 +5,8 @@ CREATE TABLE imbarcazione (
   mmsi INT NOT NULL,
   proprietario varchar(50) NOT NULL, 
   nome_imbarcazione varchar(50) NOT NULL,
-  lunghezza decimal(5,2) NOT NULL,
-  peso decimal(5,2) NOT NULL,
+  lunghezza decimal(7,2) NOT NULL,
+  peso decimal(7,2) NOT NULL,
   stato varchar(20) NOT NULL
 );
 
@@ -44,8 +44,22 @@ CREATE TABLE associazioni(
 	  REFERENCES imbarcazione(mmsi)
   );
 
+CREATE TABLE dati_istantanei(
+  id_invio SERIAL,
+  posizione geometry,
+  stato varchar(50) NOT NULL,
+  velocità decimal(5,2) NOT NULL,
+  data_invio timestamp NOT NULL,
+  mmsi INT NOT NULL,
+   CONSTRAINT fk_mmsi
+      FOREIGN KEY(mmsi) 
+	  REFERENCES imbarcazione(mmsi)
+  );
   ALTER TABLE associazioni
   ADD PRIMARY KEY (id_associazione);
+
+  ALTER TABLE dati_istantanei
+  ADD PRIMARY KEY (id_invio);
   
 INSERT INTO users (username, credito, ruolo, mail) 
   VALUES 

@@ -56,6 +56,15 @@ export async function validatorBodyImbarcazione(imbarcazione:any):Promise<any>{
     if(!check) return new Error("Il proprietario dell'imbarcazione deve essere un utente esistente");
     return true
 }
+export async function validatorBodyDatiIstantanei(dati:any,proprietario:string):Promise<any>{
+    const checkImbarcazione = await findImbarcazione(dati.mmsi).then((imbarcazione) => { 
+        if(imbarcazione && imbarcazione.proprietario === proprietario) return imbarcazione;
+        else return false;
+    });
+
+    if(!checkImbarcazione) return new Error("L'mmsi deve corrispondere ad una imbarcazione esistente e posseduta");
+    return true
+}
 /**
  * Cerca la corrispondenza dell'mmsi nella tabella imbarcazioni
  * @param mmsi mmsi dell'imbarcazione da cercare

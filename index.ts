@@ -20,35 +20,43 @@ app.use([
         ]);
 
 //Rotta admin per l'inserimento di una nuova imbarcazione tramite POST
-app.post('/creaImbarcazione', auth.checkRoleAdmin,validator.checkUserJWT,validator.checkPostNewBoat, errorHandler, (req, res) => {
+app.post('/creaImbarcazione', auth.checkRoleAdmin,validator.checkAdminJWT,validator.checkPostNewBoat, errorHandler, (req, res) => {
        responses.successResponsePOST(res);
 });
 //Rotta admin per l'inserimento di una nuova geofence area tramite POST
-app.post('/creaGeofence', auth.checkRoleAdmin,validator.checkUserJWT,validator.checkPostGeofence, errorHandler, (req, res) => {
+app.post('/creaGeofence', auth.checkRoleAdmin,validator.checkAdminJWT,validator.checkPostGeofence, errorHandler, (req, res) => {
        responses.successResponsePOST(res);
 });
 //Rotta admin per l'inserimento di una nuova associazione tra geofence area e imbarcazione tramite POST
-app.post('/creaAssociazione', auth.checkRoleAdmin,validator.checkUserJWT,validator.checkPostAssociazione, errorHandler, (req, res) => {
+app.post('/creaAssociazione', auth.checkRoleAdmin,validator.checkAdminJWT,validator.checkPostAssociazione, errorHandler, (req, res) => {
+       responses.successResponsePOST(res);
+});
+//Rotta user per l'invio dei dati istantanei tramite POST
+app.post('/inviaDati', auth.checkRoleUser,validator.checkUserJWT,validator.checkPostInvioDati, errorHandler, (req, res) => {
        responses.successResponsePOST(res);
 });
 //Rotta admin per la rimozione di una associazione esistente tra geofence area e imbarcazione tramite DELETE
-app.delete('/deleteAssociazione', auth.checkRoleAdmin,validator.checkUserJWT,validator.checkDeleteAssociazione, errorHandler, (req, res) => {
+app.delete('/deleteAssociazione', auth.checkRoleAdmin,validator.checkAdminJWT,validator.checkDeleteAssociazione, errorHandler, (req, res) => {
        responses.successResponsePOST(res);
 });
 //Rotta admin per ottenere tutte le imbarcazioni tramite GET
-app.get('/getAllImbarcazioni', auth.checkRoleAdmin,validator.checkUserJWT,validator.getAllImbarcazioni, errorHandler, (req, res) => {
+app.get('/getAllImbarcazioni', auth.checkRoleAdmin,validator.checkAdminJWT,validator.getAllImbarcazioni, errorHandler, (req, res) => {
        responses.successResponseGET(res);
 });
 //Rotta admin per ottenere tutte le geofences tramite GET
-app.get('/getAllGeofences', auth.checkRoleAdmin,validator.checkUserJWT,validator.getAllGeofences, errorHandler, (req, res) => {
+app.get('/getAllGeofences', auth.checkRoleAdmin,validator.checkAdminJWT,validator.getAllGeofences, errorHandler, (req, res) => {
        responses.successResponseGET(res);
 });
 //Rotta admin per ottenere tutti gli utenti tramite GET
-app.get('/getAllUsers', auth.checkRoleAdmin,validator.checkUserJWT,validator.getAllUsers, errorHandler, (req, res) => {
+app.get('/getAllUsers', auth.checkRoleAdmin,validator.checkAdminJWT,validator.getAllUsers, errorHandler, (req, res) => {
        responses.successResponseGET(res);
 });
 //Rotta admin per ottenere tutte le associazioni tramite GET
-app.get('/getAllAssociazioni', auth.checkRoleAdmin,validator.checkUserJWT,validator.getAllAssociazioni, errorHandler, (req, res) => {
+app.get('/getAllAssociazioni', auth.checkRoleAdmin,validator.checkAdminJWT,validator.getAllAssociazioni, errorHandler, (req, res) => {
+       responses.successResponseGET(res);
+});
+//Rotta user per ottenere tutte le proprie associazioni tramite GET
+app.get('/getAssociazioni', auth.checkRoleUser,validator.checkUserJWT,validator.getAssociazioniUser, errorHandler, (req, res) => {
        responses.successResponseGET(res);
 });
 
