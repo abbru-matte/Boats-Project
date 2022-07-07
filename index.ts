@@ -32,7 +32,7 @@ app.post('/creaAssociazione', auth.checkRoleAdmin,validator.checkAdminJWT,valida
        responses.successResponsePOST(res);
 });
 //Rotta user per l'invio dei dati istantanei tramite POST
-app.post('/inviaDati', auth.checkRoleUser,validator.checkUserJWT,validator.checkPostInvioDati, errorHandler, (req, res) => {
+app.post('/inviaDati', auth.checkRoleUser,validator.checkUserJWT,validator.checkCredito,validator.checkPostInvioDati, errorHandler, (req, res) => {
        responses.successResponsePOST(res);
 });
 //Rotta admin per la rimozione di una associazione esistente tra geofence area e imbarcazione tramite DELETE

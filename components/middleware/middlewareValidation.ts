@@ -49,10 +49,26 @@ const { Op } = require("sequelize");
             next(error)
         } else {
             req.username = check.username;
+            req.credito = check.credito;
             next()
         }
     }catch(error){
         next(error);
+    }
+};
+/**
+ * Funzione che verifica che l'utente possieda credito sufficiente per l'invio dei dati
+ * @param req richiesta
+ * @param res risposta
+ * @param next successivo
+ */
+export async function checkCredito(req,res,next) {
+    if (req.credito >= 0.025){
+        req.username = req.username;
+        next();
+    } else {
+        let error = new Error(`Non si possiede credito sufficiente per l'invio dei dati istantanei`);
+        next(error)
     }
 };
 
@@ -171,13 +187,15 @@ export async function checkPostGeofence (req:any,res:any,next:any){
                 datiIstantanei.posizione.coordinates = [req.body.longitudine,req.body.latitudine];
                 delete datiIstantanei['latitudine'];
                 delete datiIstantanei['longitudine'];
-                await DatiIstantanei.DatoIstantaneo.create(datiIstantanei).then((dati:any) =>{
-                    res.message = "Dati inviati";
-                    res.status_code = 200;
-                    res.status_message = "STATUS OK";
-                    res.data = {dati};
-                    next();
-                });
+
+                let dati = await DatiIstantanei.DatoIstantaneo.create(datiIstantanei);
+                await Users.scalaCredito(req.username).then((user:any) =>{
+                        res.message = "Dati inviati";
+                        res.status_code = 200;
+                        res.status_message = "STATUS OK";
+                        res.data = {dati};
+                        next();
+                    })
             }
         } 
     }catch(error){

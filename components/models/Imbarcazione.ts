@@ -56,6 +56,13 @@ export async function validatorBodyImbarcazione(imbarcazione:any):Promise<any>{
     if(!check) return new Error("Il proprietario dell'imbarcazione deve essere un utente esistente");
     return true
 }
+/**
+ * Controlla l'esistenza dell'imbarcazione specificata nella richiesta 
+ * e verifica che sia posseduta dall'utente che invia i dati
+ * @param dati contiene i dati istantanei da validare
+ * @param proprietario è l'utente che fa la richiesta
+ * @returns Ritorna true se la validazione è andata a buon fine, altrimenti l'errore relativo
+ */
 export async function validatorBodyDatiIstantanei(dati:any,proprietario:string):Promise<any>{
     const checkImbarcazione = await findImbarcazione(dati.mmsi).then((imbarcazione) => { 
         if(imbarcazione && imbarcazione.proprietario === proprietario) return imbarcazione;
