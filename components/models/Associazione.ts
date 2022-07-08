@@ -21,6 +21,10 @@ export const Associazione = sequelize.define('associazioni', {
         type: DataTypes.BOOLEAN(),
         defaultValue: false
     },
+    violazioni_recenti:{
+        type: DataTypes.INTEGER(),
+        defaultValue: 0
+    },
     last_update:{
         type: DataTypes.DATE
     }
@@ -168,7 +172,8 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
     }
     let entrato = {
         inside:true,
-        last_update:Sequelize.literal('CURRENT_TIMESTAMP(3)')
+        last_update:Sequelize.literal('CURRENT_TIMESTAMP(3)'),
+        violazioni_recenti:0
     }
     let eventi = [];
     for(const associazione of associazioniAttive){
@@ -199,6 +204,12 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
         console.log("punto coordinate"+ datiIstantanei.posizione.coordinates)
         console.log("Risultato del check " + check)
         if (check == true){
+            entrato.violazioni_recenti = associazione.violazioni_recenti + 1;
+            if (geo[0].vel_max != null){
+                if (Number(datiIstantanei.velocità) >= geo[0].vel_max){
+                    entrato.violazioni_recenti++;
+                }
+            }
             await Associazione.update(entrato, {where: { id_associazione: associazione.id_associazione }});
             const data = {
                 evento:"Entrata",
