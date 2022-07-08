@@ -55,10 +55,15 @@ app.get('/getAllUsers', auth.checkRoleAdmin,validator.checkAdminJWT,validator.ge
 app.get('/getAllAssociazioni', auth.checkRoleAdmin,validator.checkAdminJWT,validator.getAllAssociazioni, errorHandler, (req, res) => {
        responses.successResponseGET(res);
 });
+//Rotta admin per ottenere tutte le entrate/uscite tramite GET
+app.get('/getEntrateUscite', auth.checkRoleAdmin,validator.checkAdminJWT,validator.getEntrateUscite, errorHandler, (req, res) => {
+       responses.successResponseGET(res);
+});
 //Rotta user per ottenere tutte le proprie associazioni tramite GET
 app.get('/getAssociazioni', auth.checkRoleUser,validator.checkUserJWT,validator.getAssociazioniUser, errorHandler, (req, res) => {
        responses.successResponseGET(res);
 });
+
 
 
 //Rotta not found per le richieste GET di rotte non esistenti
