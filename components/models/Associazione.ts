@@ -4,7 +4,7 @@ import * as Users from "./User";
 import * as Geofences from "./Geofence";
 import * as Imbarcazioni from "./Imbarcazione";
 import * as d3 from 'd3-geo'
-//import * as EntrateUscite from "./EntrataUscita";
+import * as EntrateUscite from "./EntrataUscita";
 const sequelize: Sequelize = DatabaseSingleton.getInstance().getConnessione();
 
 /**
@@ -20,6 +20,9 @@ export const Associazione = sequelize.define('associazioni', {
     inside:{
         type: DataTypes.BOOLEAN(),
         defaultValue: false
+    },
+    last_update:{
+        type: DataTypes.DATE
     }
 }, 
 {
@@ -160,11 +163,14 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
     let associazioniAttive = associazioni.filter(associazione => associazione.inside === true);
     let associazioniNonAttive = associazioni.filter(associazione => associazione.inside === false);
     let uscito = {
-        inside:false
+        inside:false,
+        last_update:Sequelize.literal('CURRENT_TIMESTAMP(3)')
     }
     let entrato = {
-        inside:true
+        inside:true,
+        last_update:Sequelize.literal('CURRENT_TIMESTAMP(3)')
     }
+    let eventi = [];
     for(const associazione of associazioniAttive){
         let geo = geofences.filter(element => element.nome_area === associazione.nome_geofence);
         
@@ -179,10 +185,10 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
         if (check == false){
             await Associazione.update(uscito, {where: { id_associazione: associazione.id_associazione }});
             const data = {
-                evento:false,
+                evento:"Uscita",
                 id_associazione:associazione.id_associazione
             }
-            //await EntrateUscite.EntrataUscita.create(data);
+            eventi.push(data);
         }
     }
     for(const associazione of associazioniNonAttive){
@@ -195,12 +201,12 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
         if (check == true){
             await Associazione.update(entrato, {where: { id_associazione: associazione.id_associazione }});
             const data = {
-                evento:true,
+                evento:"Entrata",
                 id_associazione:associazione.id_associazione
             }
-            //await EntrateUscite.EntrataUscita.create(data);
+            eventi.push(data);
         }
         
     }
-    return true;
+    return eventi;
 };

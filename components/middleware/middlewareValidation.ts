@@ -92,8 +92,8 @@ export async function checkPostNewBoat (req:any,res:any,next:any){
             if(!(errorResp instanceof Error)){
                 await Imbarcazioni.Imbarcazione.create(req.body).then((imbarcazione:any) =>{
                     res.message = "Imbarcazione creata";
-                    res.status_code = 200;
-                    res.status_message = "STATUS OK";
+                    res.status_code = 201;
+                    res.status_message = "Created";
                     res.data = {"mmsi":imbarcazione.mmsi};
                     next();
                 });
@@ -121,8 +121,8 @@ export async function checkPostGeofence (req:any,res:any,next:any){
         else{
                 await Geofences.Geofence.create(req.body).then((geofences:any) =>{
                     res.message = "Geofence creata";
-                    res.status_code = 200;
-                    res.status_message = "STATUS OK";
+                    res.status_code = 201;
+                    res.status_message = "Created";
                     res.data = {"nome_area":geofences.nome_area};
                     next();
                 });
@@ -151,8 +151,8 @@ export async function checkPostGeofence (req:any,res:any,next:any){
             if(!(errorResp instanceof Error)){
                 await Associazioni.Associazione.create(req.body).then((associazione:any) =>{
                     res.message = "Associazione creata";
-                    res.status_code = 200;
-                    res.status_message = "STATUS OK";
+                    res.status_code = 201;
+                    res.status_message = "Created";
                     res.data = {"id_associazione":associazione.id_associazione,
                                 "nome_geofence": associazione.nome_geofence, 
                                 "mmsi_imbarcazione": associazione.mmsi_imbarcazione};
@@ -196,10 +196,13 @@ export async function checkPostGeofence (req:any,res:any,next:any){
                         //console.log("Sono arrivato dentro associazioni" + associazioni)
                         let geofences = await Associazioni.getGeofences(associazioni);
                         //console.log("ciao"+geofences);
-                        await Associazioni.checkPosizione(associazioni,geofences,datiIstantanei).then((user:any) =>{
+                        await Associazioni.checkPosizione(associazioni,geofences,datiIstantanei).then(async(eventi:any) =>{
+                            for(const evento of eventi){
+                                await EntrateUscite.EntrataUscita.create(evento);
+                            }
                             res.message = "Dati inviati";
-                            res.status_code = 200;
-                            res.status_message = "STATUS OK";
+                            res.status_code = 201;
+                            res.status_message = "Created";
                             res.data = {dati};
                             next();
                         })
@@ -234,7 +237,7 @@ export async function checkPostGeofence (req:any,res:any,next:any){
                 await Associazioni.Associazione.destroy({ where: { id_associazione: response } }).then(() =>{
                     res.message = "Associazione rimossa";
                     res.status_code = 200;
-                    res.status_message = "STATUS OK";
+                    res.status_message = "OK";
                     res.data = {"id_associazione":response};
                     next();
                 });
@@ -258,7 +261,7 @@ export async function getAllImbarcazioni(req:any,res:any,next:any) {
             res.message = "Richiesta avvenuta con successo";
             res.status_code = 200;
             res.status_message = "OK";
-            res.data = {"Elenco imbarcazioni": imbarcazioni};
+            res.data = {"Elenco_imbarcazioni": imbarcazioni};
             next();
             });
         
@@ -281,7 +284,7 @@ export async function getAllUsers(req:any,res:any,next:any) {
             res.message = "Richiesta avvenuta con successo";
             res.status_code = 200;
             res.status_message = "OK";
-            res.data = {"Elenco users": users};
+            res.data = {"Elenco_users": users};
             next();
             });
         
@@ -304,7 +307,7 @@ export async function getAllGeofences(req:any,res:any,next:any) {
             res.message = "Richiesta avvenuta con successo";
             res.status_code = 200;
             res.status_message = "OK";
-            res.data = {"Elenco geofences": geofences};
+            res.data = {"Elenco_geofences": geofences};
             next();
             });
         
@@ -327,7 +330,7 @@ export async function getAllGeofences(req:any,res:any,next:any) {
             res.message = "Richiesta avvenuta con successo";
             res.status_code = 200;
             res.status_message = "OK";
-            res.data = {"Elenco associazioni": associazioni};
+            res.data = {"Elenco_associazioni": associazioni};
             next();
             });
         
@@ -350,7 +353,7 @@ export async function getAllGeofences(req:any,res:any,next:any) {
             res.message = "Richiesta avvenuta con successo";
             res.status_code = 200;
             res.status_message = "OK";
-            res.data = {"Elenco entrate/uscite": eventi};
+            res.data = {"Elenco_entrate_uscite": eventi};
             next();
             });
         
@@ -379,7 +382,7 @@ export async function getAllGeofences(req:any,res:any,next:any) {
                     res.message = "Richiesta avvenuta con successo";
                     res.status_code = 200;
                     res.status_message = "OK";
-                    res.data = {"Elenco associazioni utente": associazioni};
+                    res.data = {"Elenco_associazioni_utente": associazioni};
                     next();
                     });
                 });

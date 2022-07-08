@@ -15,9 +15,8 @@ export const EntrataUscita = sequelize.define('entrate_uscite', {
         autoIncrement: true,
         primaryKey: true
     },
-    //true = entrata, false = uscita
     evento:{
-        type: DataTypes.BOOLEAN()
+        type: DataTypes.STRING()
     },
     data_evento:{
         type: DataTypes.DATE,

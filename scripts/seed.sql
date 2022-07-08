@@ -27,7 +27,8 @@ CREATE TABLE associazioni(
   id_associazione SERIAL PRIMARY KEY,
   nome_geofence varchar(50) NOT NULL,
   mmsi_imbarcazione INT NOT NULL,
-  inside boolean, 
+  inside boolean,
+  last_update timestamp, 
    CONSTRAINT fk_nome_geofence
       FOREIGN KEY(nome_geofence) 
 	  REFERENCES geofences(nome_area),
@@ -38,11 +39,11 @@ CREATE TABLE associazioni(
 
 CREATE TABLE entrate_uscite(
   id_evento SERIAL PRIMARY KEY,
-  evento boolean,
+  evento varchar(50) NOT NULL,
   data_evento timestamp NOT NULL,
-  id_asso INT NOT NULL,
+  id_associazione INT NOT NULL,
    CONSTRAINT fk_id_associazione
-      FOREIGN KEY(id_asso) 
+      FOREIGN KEY(id_associazione) 
 	  REFERENCES associazioni(id_associazione)
   );
 
@@ -126,10 +127,10 @@ INSERT INTO imbarcazione (mmsi, proprietario, nome_imbarcazione, lunghezza,peso,
                   [-60.0, -30.0], [-30.0, -30.0] ]
                 ]
 }',20);
-INSERT INTO associazioni (nome_geofence,inside,mmsi_imbarcazione) 
+INSERT INTO associazioni (nome_geofence,inside,mmsi_imbarcazione,last_update) 
   VALUES 
-  ('Gotham', 'true', 123456789), 
-  ('Marley', 'false',123456798),
-  ('Paradis', 'true',123456789),
-  ('Smallville', 'false',123456789),
-  ('Marley', 'false',123456789);
+  ('Gotham', 'true', 123456789,'2022-07-05T15:24:35+00:00'), 
+  ('Marley', 'false',123456798,'2022-07-07T17:35:35+00:00'),
+  ('Paradis', 'true',123456789,'2022-07-08T15:24:35+00:00'),
+  ('Smallville', 'false',123456789,'2022-07-04T11:24:35+00:00'),
+  ('Marley', 'false',123456789,'2022-07-05T13:24:35+00:00');
