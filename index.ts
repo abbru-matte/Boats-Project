@@ -59,6 +59,7 @@ app.get('/getAllAssociazioni', auth.checkRoleAdmin,validator.checkAdminJWT,valid
 app.get('/getEntrateUscite', auth.checkRoleAdmin,validator.checkAdminJWT,validator.getEntrateUscite, errorHandler, (req, res) => {
        responses.successResponseGET(res);
 });
+
 //Rotta user per ottenere tutte le proprie associazioni tramite GET
 app.get('/getAssociazioni', auth.checkRoleUser,validator.checkUserJWT,validator.getAssociazioniUser, errorHandler, (req, res) => {
        responses.successResponseGET(res);

@@ -25,9 +25,15 @@ export const Associazione = sequelize.define('associazioni', {
         type: DataTypes.INTEGER(),
         defaultValue: 0
     },
-    last_update:{
+    ultimo_ingresso:{
         type: DataTypes.DATE
-    }
+    },
+    ultima_violazione_ingresso:{
+        type: DataTypes.DATE
+    },
+    ultima_uscita:{
+        type: DataTypes.DATE
+    },
 }, 
 {
     modelName: 'associazioni',
@@ -168,13 +174,19 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
     let associazioniNonAttive = associazioni.filter(associazione => associazione.inside === false);
     let uscito = {
         inside:false,
-        last_update:Sequelize.literal('CURRENT_TIMESTAMP(3)')
+        ultima_uscita:Sequelize.literal('CURRENT_TIMESTAMP(3)')
     }
     let entrato = {
         inside:true,
-        last_update:Sequelize.literal('CURRENT_TIMESTAMP(3)'),
+        ultima_violazione_ingresso:Sequelize.literal('CURRENT_TIMESTAMP(3)'),
+        ultimo_ingresso:Sequelize.literal('CURRENT_TIMESTAMP(3)'),
         violazioni_recenti:0
     }
+    let violazioneVelocità = {
+        inside:true,
+        violazioni_recenti:0
+    }
+
     let eventi = [];
     for(const associazione of associazioniAttive){
         let geo = geofences.filter(element => element.nome_area === associazione.nome_geofence);
@@ -183,10 +195,8 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
         //let test = await Geofences.Geofence.findOne({where:{nome_area:associazione.nome_geofence,inside}})
         let check = d3.geoContains(geo[0].geometria,datiIstantanei.posizione.coordinates)
         //let check = classifyPoint(geo[0].geometria.coordinates,datiIstantanei.posizione.coordinates)
-        console.log("Geofence coordinate"+ geo[0].geometria.coordinates)
-        console.log("punto coordinate"+ datiIstantanei.posizione.coordinates)
-        console.log("Risultato del check " + check)
-        
+
+        //Se check è false si è usciti dalla geofence
         if (check == false){
             await Associazione.update(uscito, {where: { id_associazione: associazione.id_associazione }});
             const data = {
@@ -194,17 +204,30 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
                 id_associazione:associazione.id_associazione
             }
             eventi.push(data);
+        } else {
+            //Si è all'interno della geofence e si è superato il limite di velocità, aumenta di 1 il numero di violazioni
+            if (geo[0].vel_max != null){
+                if (Number(datiIstantanei.velocità) >= geo[0].vel_max){
+                    violazioneVelocità.violazioni_recenti = associazione.violazioni_recenti + 1;
+                    await Associazione.update(violazioneVelocità, {where: { id_associazione: associazione.id_associazione }});
+                }
+            }
         }
     }
     for(const associazione of associazioniNonAttive){
         
         let geo = geofences.filter(element => element.nome_area === associazione.nome_geofence)
         let check = d3.geoContains(geo[0].geometria,datiIstantanei.posizione.coordinates)
-        console.log("Geofence coordinate"+ geo[0].geometria.coordinates)
-        console.log("punto coordinate"+ datiIstantanei.posizione.coordinates)
-        console.log("Risultato del check " + check)
+        //Se check è true si è entrati nella geofence
         if (check == true){
-            entrato.violazioni_recenti = associazione.violazioni_recenti + 1;
+            //La violazione conta solo se è passata più di un'ora dalla precedente violazione della stessa geofence
+            if(associazione.ultima_violazione_ingresso == null || ((Date.now() + 7200000 - associazione.ultima_violazione_ingresso.getTime()) > 3600000)){
+                entrato.violazioni_recenti = associazione.violazioni_recenti + 1;
+            } else {
+                delete(entrato.ultima_violazione_ingresso);
+                entrato.violazioni_recenti = associazione.violazioni_recenti;
+            }
+            //Se si supera la velocità max della geofence il numero di violazioni aumenta di 
             if (geo[0].vel_max != null){
                 if (Number(datiIstantanei.velocità) >= geo[0].vel_max){
                     entrato.violazioni_recenti++;
