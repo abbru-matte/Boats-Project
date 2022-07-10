@@ -73,6 +73,21 @@ export async function validatorBodyDatiIstantanei(dati:any,proprietario:string):
     return true
 }
 /**
+ * Controlla l'esistenza dell'imbarcazione specificata nella richiesta 
+ * @param dati contiene i dati istantanei da validare
+ * @param proprietario è l'utente che fa la richiesta
+ * @returns Ritorna true se la validazione è andata a buon fine, altrimenti l'errore relativo
+ */
+ export async function validatorMmsiPosizione(dati:any):Promise<any>{
+    const checkImbarcazione = await findImbarcazione(dati.mmsi).then((imbarcazione) => { 
+        if(imbarcazione) return imbarcazione;
+        else return false;
+    });
+
+    if(!checkImbarcazione) return new Error("L'mmsi deve corrispondere ad una imbarcazione esistente");
+    return true
+}
+/**
  * Cerca la corrispondenza dell'mmsi nella tabella imbarcazioni
  * @param mmsi mmsi dell'imbarcazione da cercare
  * @returns Ritorna il risultato della ricerca

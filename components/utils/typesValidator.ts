@@ -37,3 +37,16 @@ export const validatorDatiIstantanei = (dati:any):boolean => {
     (!isNaN(parseFloat(dati.velocità)) && dati.velocità>0 ))
   
 };
+
+export const validatorGetPosizioni = (dati:any):boolean => {
+    if (dati.dataFine != undefined){
+        return (Number.isInteger(dati.mmsi) && dati.mmsi>0 && dati.mmsi.toString().length == 9 &&
+        (dati.dataInizio instanceof Date && !isNaN(dati.dataInizio)) &&
+        (dati.dataFine instanceof Date && !isNaN(dati.dataFine)) &&
+        (dati.dataInizio.getTime() < dati.dataFine.getTime()) && 
+        dati.dataFine.getTime() <= Date.now())
+    } else {
+        return (Number.isInteger(dati.mmsi) && dati.mmsi>0 && dati.mmsi.toString().length == 9 &&
+        (dati.dataInizio instanceof Date && !isNaN(dati.dataInizio) && dati.dataInizio.getTime() <= Date.now()))
+    }
+};

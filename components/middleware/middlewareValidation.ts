@@ -393,10 +393,10 @@ export async function getAllGeofences(req:any,res:any,next:any) {
  
     let listaImbarcazioni: string[] = [];
     try{
-        await Imbarcazioni.Imbarcazione.findAll({where:{proprietario:req.username}}).then((imbarcazioni:any) =>{
-            imbarcazioni.forEach(imbarcazione => {
-                listaImbarcazioni.push(imbarcazione.mmsi);
-            });
+        await Imbarcazioni.Imbarcazione.findAll({where:{proprietario:req.username},attributes:['mmsi']}).then((listaMmsi:any) =>{
+            for(const element of listaMmsi){
+                listaImbarcazioni.push(element.mmsi);
+            }
             Associazioni.getStatoImbarcazioniUser(req.params.geofence,listaImbarcazioni).then((stato:any) =>{
                 res.message = "Richiesta avvenuta con successo";
                 res.status_code = 200;
@@ -420,10 +420,10 @@ export async function getAllGeofences(req:any,res:any,next:any) {
     let errorResp:any;
     let listaImbarcazioni: string[] = [];
     try{
-        await Imbarcazioni.Imbarcazione.findAll({where:{proprietario:req.username}}).then((imbarcazioni:any) =>{
-            imbarcazioni.forEach(imbarcazione => {
-                listaImbarcazioni.push(imbarcazione.mmsi);
-            });
+        await Imbarcazioni.Imbarcazione.findAll({where:{proprietario:req.username},attributes:['mmsi']}).then((listaMmsi:any) =>{
+            for(const element of listaMmsi){
+                listaImbarcazioni.push(element.mmsi);
+            }
             Associazioni.Associazione.findAll({where:{mmsi_imbarcazione:listaImbarcazioni}}).then((associazioni:any) =>{
                 res.message = "Richiesta avvenuta con successo";
                 res.status_code = 200;
@@ -437,4 +437,43 @@ export async function getAllGeofences(req:any,res:any,next:any) {
     }catch(error){
         next(error)
     }
+};
+/**
+ * Funzione che controlla e valida i dati inseriti per ottenere le posizioni
+ * @param req richiesta
+ * @param res risposta
+ * @param next successivo
+ */
+ export async function getPosizioni (req:any,res:any,next:any){
+    let errorResp:any;
+    try{
+        req.params.dataInizio = new Date(req.params.dataInizio);
+        req.params.mmsi = Number(req.params.mmsi);
+        
+        if (req.params.dataFine != undefined){
+            req.params.dataFine = new Date(req.params.dataFine)
+        }
+        if(!typesValidator.validatorGetPosizioni(req.params)){
+            errorResp = new Error("Inserire i dati della richiesta in un formato valido")
+            res.status_code = 400;
+            res.status_message = "Bad Request";
+        }
+        else{   
+            errorResp = await Imbarcazioni.validatorMmsiPosizione(req.params);
+            if(!(errorResp instanceof Error)){
+                await DatiIstantanei.getPosizioniFiltrate(req.params).then((dati:any) =>{
+                    res.message = "Richiesta avvenuta con successo";
+                    res.status_code = 200;
+                    res.status_message = "OK";
+                    res.data = {"Elenco_posizioni_imbarcazione": dati};
+                    next();
+                    
+                });
+            }
+            
+        } 
+    }catch(error){
+        next(error)
+    }
+    next(errorResp);
 };

@@ -36,3 +36,23 @@ export const DatoIstantaneo = sequelize.define('dati_istantanei', {
 DatoIstantaneo.belongsTo(Imbarcazioni.Imbarcazione,{
     foreignKey: "mmsi"
   });
+
+  /**
+ * Restituisce le posizioni dell'imbarcazione richiesta che rispettano i filtri temporali
+ * @param filtri contiene i filtri temporali e l'mmsi dell'imbarcazione
+ * @returns Ritorna l'elenco delle posizioni dell'imbarcazione che rispettano i filtri temporali
+ */
+ export async function getPosizioniFiltrate(filtri):Promise<any>{
+    let datiIstantanei = [];
+
+    datiIstantanei = await DatoIstantaneo.findAll({where:{mmsi:Number(filtri.mmsi)},attributes:['posizione','stato','velocità','data_invio','mmsi']});
+    let dataInizio = filtri.dataInizio.getTime();
+    if (filtri.dataFine != undefined){
+        let dataFine = filtri.dataFine.getTime() + (86400 * 1000); // per considerare le posizioni fino alle 23:59
+        datiIstantanei = datiIstantanei.filter(dato => (dato.data_invio.getTime() >= dataInizio
+        && dato.data_invio.getTime() <= dataFine))
+    } else {
+        datiIstantanei = datiIstantanei.filter(dato => (dato.data_invio.getTime() >= dataInizio))
+    }
+    return datiIstantanei;    
+}
