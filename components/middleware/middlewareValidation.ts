@@ -364,6 +364,52 @@ export async function getAllGeofences(req:any,res:any,next:any) {
     }
 };
 /**
+ * Funzione che restituisce lo stato di tutte le imbarcazioni associate alla geofence richiesta
+ * @param req richiesta
+ * @param res risposta
+ * @param next successivo
+ */
+ export async function getStatoImbarcazioni(req:any,res:any,next:any) {
+    try{
+        await Associazioni.getStato(req.params.geofence).then((stato:any) =>{
+            res.message = "Richiesta avvenuta con successo";
+            res.status_code = 200;
+            res.status_message = "OK";
+            res.data = {"Stato_imbarcazioni_associate": stato};
+            next();
+        });     
+    }catch(error){
+        next(error)
+    }
+};
+/**
+ * Funzione che restituisce lo stato di tutte le imbarcazioni possedute dall'utente 
+ * e associate alla geofence richiesta
+ * @param req richiesta
+ * @param res risposta
+ * @param next successivo
+ */
+ export async function getStatoImbarcazioniUser(req:any,res:any,next:any) {
+ 
+    let listaImbarcazioni: string[] = [];
+    try{
+        await Imbarcazioni.Imbarcazione.findAll({where:{proprietario:req.username}}).then((imbarcazioni:any) =>{
+            imbarcazioni.forEach(imbarcazione => {
+                listaImbarcazioni.push(imbarcazione.mmsi);
+            });
+            Associazioni.getStatoImbarcazioniUser(req.params.geofence,listaImbarcazioni).then((stato:any) =>{
+                res.message = "Richiesta avvenuta con successo";
+                res.status_code = 200;
+                res.status_message = "OK";
+                res.data = {"Elenco_associazioni_utente": stato};
+                next();
+                });
+            });  
+    }catch(error){
+        next(error)
+    }
+};
+/**
  * Funzione che restituisce tutte le associazioni presenti nel DB 
  * relative ad imbarcazioni possedute dall'utente che fa la richiesta
  * @param req richiesta
@@ -374,20 +420,18 @@ export async function getAllGeofences(req:any,res:any,next:any) {
     let errorResp:any;
     let listaImbarcazioni: string[] = [];
     try{
-            await Imbarcazioni.Imbarcazione.findAll({where:{proprietario:req.username}}).then((imbarcazioni:any) =>{
-                imbarcazioni.forEach(imbarcazione => {
-                    listaImbarcazioni.push(imbarcazione.mmsi);
+        await Imbarcazioni.Imbarcazione.findAll({where:{proprietario:req.username}}).then((imbarcazioni:any) =>{
+            imbarcazioni.forEach(imbarcazione => {
+                listaImbarcazioni.push(imbarcazione.mmsi);
+            });
+            Associazioni.Associazione.findAll({where:{mmsi_imbarcazione:listaImbarcazioni}}).then((associazioni:any) =>{
+                res.message = "Richiesta avvenuta con successo";
+                res.status_code = 200;
+                res.status_message = "OK";
+                res.data = {"Elenco_associazioni_utente": associazioni};
+                next();
                 });
-                Associazioni.Associazione.findAll({where:{mmsi_imbarcazione:listaImbarcazioni}}).then((associazioni:any) =>{
-                    res.message = "Richiesta avvenuta con successo";
-                    res.status_code = 200;
-                    res.status_message = "OK";
-                    res.data = {"Elenco_associazioni_utente": associazioni};
-                    next();
-                    });
-                });
-            
-        
+            });  
         if(errorResp instanceof Error)
             next(errorResp) 
     }catch(error){

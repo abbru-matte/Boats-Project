@@ -60,6 +60,14 @@ app.get('/getEntrateUscite', auth.checkRoleAdmin,validator.checkAdminJWT,validat
        responses.successResponseGET(res);
 });
 
+//Rotta admin per ottenere lo stato di tutte le imbarcazioni associate alla geofence richiesta
+app.get('/getStatoImbarcazioni/:geofence', auth.checkRoleAdmin,validator.checkAdminJWT,validator.getStatoImbarcazioni, errorHandler, (req, res) => {
+       responses.successResponseGET(res);
+});
+//Rotta user per ottenerelo stato di tutte le proprie imbarcazioni associate alla geofence richiesta
+app.get('/getStatoImbarcazioniUser/:geofence', auth.checkRoleUser,validator.checkUserJWT,validator.getStatoImbarcazioniUser, errorHandler, (req, res) => {
+       responses.successResponseGET(res);
+});
 //Rotta user per ottenere tutte le proprie associazioni tramite GET
 app.get('/getAssociazioni', auth.checkRoleUser,validator.checkUserJWT,validator.getAssociazioniUser, errorHandler, (req, res) => {
        responses.successResponseGET(res);

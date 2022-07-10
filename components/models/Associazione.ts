@@ -244,3 +244,44 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
     }
     return eventi;
 };
+/**
+ * Restituisce lo stato di tutte le imbarcazioni associate alla geofence
+ * @param geofence contiene il nome della geofence di cui restituire lo stato delle imbarcazioni associate
+ * @returns Ritorna l'elenco delle imbarcazioni con relativo stato
+ */
+ export async function getStato(geofence):Promise<any>{
+    let associazioni = [];
+    let stato = [];
+    associazioni = await Associazione.findAll({where:{nome_geofence:geofence}});
+    for (let associazione of associazioni){
+        if(associazione.inside == true){
+            let tempo = (Date.now() + 7200000 - associazione.ultimo_ingresso.getTime());
+            let minuti = (tempo / 60000).toFixed(0); 
+            associazione.setDataValue('tempo_permanenza_minuti',Number(minuti))
+        }
+        stato.push(associazione)
+    }
+    return stato;    
+}
+/**
+ * Restituisce lo stato di tutte le imbarcazioni possedute dall'utente e associate alla geofence.
+ * Per le imbarcazioni all'interno si calcola anche il tempo di permanenza in minuti
+ * @param geofence contiene il nome della geofence di cui restituire lo stato delle imbarcazioni associate
+ * @param listaImbarcazioni contiene le imbarcazioni di cui restituire lo stato
+ * @returns Ritorna l'elenco delle imbarcazioni con relativo stato
+ */
+ export async function getStatoImbarcazioniUser(geofence,listaImbarcazioni):Promise<any>{
+    let associazioni = [];
+    let stato = [];
+    
+    associazioni = await Associazione.findAll({where:{mmsi_imbarcazione:listaImbarcazioni,nome_geofence:geofence}});
+    for (let associazione of associazioni){
+        if(associazione.inside == true){
+            let tempo = (Date.now() + 7200000 - associazione.ultimo_ingresso.getTime());
+            let minuti = (tempo / 60000).toFixed(0); 
+            associazione.setDataValue('tempo_permanenza_minuti',Number(minuti))
+        }
+        stato.push(associazione)
+    }
+    return stato;    
+}
