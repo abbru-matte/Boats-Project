@@ -166,6 +166,39 @@ export async function checkPostGeofence (req:any,res:any,next:any){
     next(errorResp);
 };
 /**
+ * Funzione che controlla e valida i dati inseriti per la ricarica dell'utente
+ * @param res risposta
+ * @param next successivo
+ */
+ export async function checkRicaricaUtente (req:any,res:any,next:any){
+    let errorResp:any;
+    try{
+        if(!typesValidator.validatorDatiRicarica(req.body)){
+            errorResp = new Error("Inserire i dati del payload della richiesta in un formato valido")
+            res.status_code = 400;
+            res.status_message = "Bad Request";
+        }
+        else{
+            errorResp = await Users.validatorRicaricaUtente(req.body.mail);
+            if(!(errorResp instanceof Error)){  
+                const user = {
+                    credito: req.body.credito,
+                }
+                await Users.User.update(user, {where: { mail:req.body.mail }}).then(()=>{
+                    res.message = "Credito aggiornato";
+                    res.status_code = 200;
+                    res.status_message = "OK";
+                    next();
+                })           
+                   
+            }
+        } 
+    }catch(error){
+        next(error)
+    }
+    next(errorResp);
+};
+/**
  * Funzione che controlla e valida i dati istantanei inviati dall'utente
  * @param req richiesta
  * @param res risposta
@@ -476,4 +509,24 @@ export async function getAllGeofences(req:any,res:any,next:any) {
         next(error)
     }
     next(errorResp);
+};
+/**
+ * Funzione che restituisce il credito dell'utente che fa la richiesta
+ * @param req richiesta
+ * @param res risposta
+ * @param next successivo
+ */
+ export async function getCredito(req:any,res:any,next:any) {
+ 
+    try{
+        await Users.User.findByPk(req.username,{attributes:['credito']}).then((credito:any) =>{
+                res.message = "Richiesta avvenuta con successo";
+                res.status_code = 200;
+                res.status_message = "OK";
+                res.data = {"Credito_utente": Number(credito.credito)};
+                next();
+                });  
+    }catch(error){
+        next(error)
+    }
 };

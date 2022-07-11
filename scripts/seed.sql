@@ -14,7 +14,7 @@ CREATE TABLE users(
   username varchar(50) NOT NULL PRIMARY KEY,
   credito decimal(7,3) NOT NULL,
   ruolo varchar(50) NOT NULL,
-  mail  varchar(320) NOT NULL
+  mail  varchar(320) NOT NULL UNIQUE
 );
 
 CREATE TABLE geofences(

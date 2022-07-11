@@ -120,7 +120,6 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
  * @returns Ritorna true se la validazione è andata a buon fine, altrimenti l'errore relativo
  */
  export async function checkAssociazioni(mmsi):Promise<any>{
-    console.log("Sono arrivato dentro check")
     await findAllAssociazioni(mmsi).then((associazioni) => { 
         if(associazioni) {
             return associazioni;

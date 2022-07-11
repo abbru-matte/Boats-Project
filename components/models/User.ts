@@ -22,7 +22,10 @@ export const User = sequelize.define('users', {
     },
     mail: {
         type: DataTypes.STRING,
-        allowNull:false
+        allowNull:false,
+        validate: {
+            isEmail:true
+        }
     }
 }, 
 {
@@ -56,6 +59,35 @@ export async function scalaCredito(username:string):Promise<any> {
         result = await User.findByPk(username,{raw:true});
         result.credito = result.credito - 0.025;
         await User.update(result, {where: { username: username }})
+    }catch(error){
+        result.log(error);
+    }
+    return result;
+};
+
+/**
+ * Controlla l'esistenza dell'utente collegato alla mail specificata nella richiesta 
+ * @param mail contiene la mail di cui cercare l'utente collegato
+ * @returns Ritorna true se la validazione è andata a buon fine, altrimenti l'errore relativo
+ */
+ export async function validatorRicaricaUtente(mail:any):Promise<any>{
+    const checkutente = await findUserByMail(mail).then((utente) => { 
+        if(utente) return utente;
+        else return false;
+    });
+
+    if(!checkutente) return new Error("Non è stato trovato nessun utente collegato alla mail specificata nella richiesta");
+    return true
+}
+/**
+ * Ritorna l'utente corrispondente alla mail, se esiste
+ * @param mail contiene la mail da cercare
+ * @returns  Ritorna il risultato dell'operazione
+ */
+ export async function findUserByMail(mail:any):Promise<any> {
+    let result:any;
+    try{
+        result = await User.findOne({where:{mail:mail}})
     }catch(error){
         result.log(error);
     }

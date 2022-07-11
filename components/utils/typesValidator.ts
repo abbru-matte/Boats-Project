@@ -28,6 +28,13 @@ export const validatorDatiAssociazione = (associazione:any):boolean => {
   
 };
 
+export const validatorDatiRicarica = (ricarica:any):boolean => {
+ 
+    return (typeof ricarica.mail == "string" && validateEmail(ricarica.mail) &&
+    (!isNaN(parseFloat(ricarica.credito)) && ricarica.credito>0 ))
+  
+};
+
 export const validatorDatiIstantanei = (dati:any):boolean => {
  
     return (typeof dati.stato == "string" && (dati.stato == "in navigazione" ||  dati.stato == "in pesca" ||  dati.stato == "stazionaria") &&
@@ -50,3 +57,9 @@ export const validatorGetPosizioni = (dati:any):boolean => {
         (dati.dataInizio instanceof Date && !isNaN(dati.dataInizio) && dati.dataInizio.getTime() <= Date.now()))
     }
 };
+
+function validateEmail(email) 
+    {
+        var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
