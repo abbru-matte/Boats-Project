@@ -31,6 +31,7 @@ CREATE TABLE associazioni(
   violazioni_recenti INT NOT NULL,
   ultimo_ingresso timestamp, 
   ultima_violazione_ingresso timestamp, 
+  ultima_violazione_velocità timestamp, 
   ultima_uscita timestamp, 
    CONSTRAINT fk_nome_geofence
       FOREIGN KEY(nome_geofence) 
@@ -38,6 +39,14 @@ CREATE TABLE associazioni(
     CONSTRAINT fk_mmsi_imbarcazione
       FOREIGN KEY(mmsi_imbarcazione) 
 	  REFERENCES imbarcazione(mmsi)
+  );
+
+CREATE TABLE segnalazioni(
+  id_segnalazione SERIAL PRIMARY KEY,
+  data_inizio timestamp,
+  data_fine timestamp,
+  stato varchar(50) NOT NULL,
+  id_associazione INT NOT NULL
   );
 
 CREATE TABLE entrate_uscite(
@@ -130,10 +139,13 @@ INSERT INTO imbarcazione (mmsi, proprietario, nome_imbarcazione, lunghezza,peso,
                   [-60.0, -30.0], [-30.0, -30.0] ]
                 ]
 }',20);
-INSERT INTO associazioni (nome_geofence,inside,mmsi_imbarcazione,violazioni_recenti,ultimo_ingresso,ultima_violazione_ingresso,ultima_uscita) 
+INSERT INTO associazioni (nome_geofence,inside,mmsi_imbarcazione,violazioni_recenti,ultimo_ingresso,ultima_violazione_ingresso,ultima_violazione_velocità,ultima_uscita) 
   VALUES 
-  ('Gotham', 'true', 123456789,0,'2022-07-05T15:24:35+00:00','2022-07-05T15:24:35+00:00','2022-07-04T15:24:35+00:00'), 
-  ('Marley', 'false',123456798,0,'2022-07-07T17:35:35+00:00','2022-07-07T17:35:35+00:00','2022-07-08T15:24:35+00:00'),
-  ('Paradis', 'true',123456789,0,'2022-07-08T15:24:35+00:00','2022-07-08T15:24:35+00:00','2022-07-07T15:24:35+00:00'),
-  ('Smallville', 'false',123456789,0,'2022-07-04T11:24:35+00:00','2022-07-04T11:24:35+00:00','2022-07-05T15:24:35+00:00'),
-  ('Marley', 'false',123456789,0,'2022-07-05T13:24:35+00:00','2022-07-05T13:24:35+00:00','2022-07-06T15:24:35+00:00');
+  ('Gotham', 'true', 123456789,0,'2022-07-05T15:24:35+00:00','2022-07-05T15:24:35+00:00','2022-07-05T15:24:35+00:00','2022-07-04T15:24:35+00:00'), 
+  ('Marley', 'false',123456798,0,'2022-07-07T17:35:35+00:00','2022-07-07T17:35:35+00:00','2022-07-05T15:24:35+00:00','2022-07-08T15:24:35+00:00'),
+  ('Paradis', 'true',123456789,0,'2022-07-08T15:24:35+00:00','2022-07-08T15:24:35+00:00','2022-07-05T15:24:35+00:00','2022-07-07T15:24:35+00:00'),
+  ('Smallville', 'false',123456789,0,'2022-07-04T11:24:35+00:00','2022-07-04T11:24:35+00:00','2022-07-05T15:24:35+00:00','2022-07-05T15:24:35+00:00'),
+  ('Marley', 'false',123456789,0,'2022-07-05T13:24:35+00:00','2022-07-05T13:24:35+00:00','2022-07-05T15:24:35+00:00','2022-07-06T15:24:35+00:00');
+INSERT INTO segnalazioni (data_inizio, data_fine, stato,id_associazione) 
+  VALUES 
+  ('2022-07-05T15:24:35+00:00', '2022-07-07T15:24:35+00:00', 'RIENTRATA',1);

@@ -6,7 +6,7 @@ import * as Associazioni from "../models/Associazione";
 import * as DatiIstantanei from "../models/DatoIstantaneo";
 import * as typesValidator from "../utils/typesValidator"
 import * as EntrateUscite from "../models/EntrataUscita";
-
+import * as Segnalazioni from "../models/Segnalazione";
 const { Op } = require("sequelize");
 
 /**
@@ -226,13 +226,18 @@ export async function checkPostGeofence (req:any,res:any,next:any){
                 await Users.scalaCredito(req.username);
                 await Associazioni.findAllAssociazioni(datiIstantanei.mmsi).then(async (associazioni)=>{
                     if (associazioni){
-                        //console.log("Sono arrivato dentro associazioni" + associazioni)
+                       
                         let geofences = await Associazioni.getGeofences(associazioni);
-                        //console.log("ciao"+geofences);
+                    
                         await Associazioni.checkPosizione(associazioni,geofences,datiIstantanei).then(async(eventi:any) =>{
                             for(const evento of eventi){
                                 await EntrateUscite.EntrataUscita.create(evento);
                             }
+                            /*
+                            for (const segnalazione of eventi[1]){
+                                await Segnalazioni.Segnalazione.create(segnalazione);
+                            }
+                            */
                             res.message = "Dati inviati";
                             res.status_code = 201;
                             res.status_message = "Created";
@@ -240,9 +245,7 @@ export async function checkPostGeofence (req:any,res:any,next:any){
                             next();
                         })
                     }    
-                });
-                //console.log(associazioni);
-                  
+                });            
         } 
     }
     }catch(error){
@@ -526,6 +529,25 @@ export async function getAllGeofences(req:any,res:any,next:any) {
                 res.data = {"Credito_utente": Number(credito.credito)};
                 next();
                 });  
+    }catch(error){
+        next(error)
+    }
+};
+/**
+ * Funzione che restituisce lo stato di tutte le imbarcazioni associate alla geofence richiesta
+ * @param req richiesta
+ * @param res risposta
+ * @param next successivo
+ */
+ export async function getSegnalazioni(req:any,res:any,next:any) {
+    try{
+        await Segnalazioni.Segnalazione.findAll().then((segnalazioni:any) =>{
+            res.message = "Richiesta avvenuta con successo";
+            res.status_code = 200;
+            res.status_message = "OK";
+            res.data = {"Stato_segnalazioni": segnalazioni};
+            next();
+        });     
     }catch(error){
         next(error)
     }

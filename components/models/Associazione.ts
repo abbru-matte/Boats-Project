@@ -5,6 +5,7 @@ import * as Geofences from "./Geofence";
 import * as Imbarcazioni from "./Imbarcazione";
 import * as d3 from 'd3-geo'
 import * as EntrateUscite from "./EntrataUscita";
+import { Segnalazione } from "./Segnalazione";
 const sequelize: Sequelize = DatabaseSingleton.getInstance().getConnessione();
 
 /**
@@ -29,6 +30,9 @@ export const Associazione = sequelize.define('associazioni', {
         type: DataTypes.DATE
     },
     ultima_violazione_ingresso:{
+        type: DataTypes.DATE
+    },
+    ultima_violazione_velocità:{
         type: DataTypes.DATE
     },
     ultima_uscita:{
@@ -136,11 +140,9 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
  export async function getGeofences(associazioni):Promise<any>{
     let geofences = [];
     for (const associazione of associazioni){
-        console.log("Sono nell'associazione "+associazione.id_associazione)
         let geofence = await Geofences.findGeofence(associazione.nome_geofence);
         geofences.push(geofence);
     }
-    //console.log("geofences "+ geofences)
     return geofences;    
 }
 
@@ -153,7 +155,6 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
  export async function findAllAssociazioni(mmsi_imbarcazione:number):Promise<any> {
     let result:any;
     try{
-        console.log("mmsi "+ mmsi_imbarcazione);
         result = await Associazione.findAll({ where: { mmsi_imbarcazione:mmsi_imbarcazione } });
     }catch(error){
         console.log(error);
@@ -183,17 +184,16 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
     }
     let violazioneVelocità = {
         inside:true,
+        ultima_violazione_velocità:Sequelize.literal('CURRENT_TIMESTAMP(3)'),
         violazioni_recenti:0
     }
 
     let eventi = [];
+    let segnalazioni = [];
     for(const associazione of associazioniAttive){
         let geo = geofences.filter(element => element.nome_area === associazione.nome_geofence);
-        
-        //let inside = sequelize.where(sequelize.fn('ST_Within', Sequelize.fn('point', 100, 20),Sequelize.fn('polygon', 100, 20)),true);
-        //let test = await Geofences.Geofence.findOne({where:{nome_area:associazione.nome_geofence,inside}})
         let check = d3.geoContains(geo[0].geometria,datiIstantanei.posizione.coordinates)
-        //let check = classifyPoint(geo[0].geometria.coordinates,datiIstantanei.posizione.coordinates)
+    
 
         //Se check è false si è usciti dalla geofence
         if (check == false){
@@ -202,13 +202,54 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
                 evento:"Uscita",
                 id_associazione:associazione.id_associazione
             }
+            
+            let updated:any = await Associazione.findOne({where:{ id_associazione: associazione.id_associazione }})
+            let tempo = updated.ultima_uscita.getTime();
+                console.log("Data uscita per subject "+tempo);
+                setTimeout(async () => {
+                    await Associazione.findOne({where:{"id_associazione": updated.id_associazione} }).then(async(associazione:any)=>{
+                        console.log("Ultima uscita "+ associazione.ultima_uscita.getTime())
+                        if (associazione != null){
+                            if (associazione.inside == false && (associazione.ultima_uscita.getTime() == tempo)){
+                                let result:any =  await Segnalazione.findOne({where:{"id_associazione": updated.id_associazione,"stato":"IN CORSO"} })
+                                if (result){
+                                    const segnalazione = {
+                                        stato: "RIENTRATA",
+                                        data_fine: Sequelize.literal('CURRENT_TIMESTAMP(3)')
+                                    }
+                                    console.log("Sto aggiornando la segnalazione")
+                                    Segnalazione.update(segnalazione,{where:{"id_segnalazione": result.id_segnalazione} });
+                                }
+                                Associazione.update({violazioni_recenti: 0},{where:{"id_associazione": updated.id_associazione} })
+                            }
+                        }
+                    });
+                }, 1000*20);
             eventi.push(data);
         } else {
-            //Si è all'interno della geofence e si è superato il limite di velocità, aumenta di 1 il numero di violazioni
+            //Si è all'interno della geofence, si è superato il limite di velocità
+            //ed è passata più di 1h(in ms) dall'ultima volta, aumenta di 1 il numero di violazioni
             if (geo[0].vel_max != null){
                 if (Number(datiIstantanei.velocità) >= geo[0].vel_max){
-                    violazioneVelocità.violazioni_recenti = associazione.violazioni_recenti + 1;
+                    if(associazione.ultima_violazione_velocità == null || ((Date.now() + 7200000 - associazione.ultima_violazione_velocità.getTime()) > 0)){
+                        violazioneVelocità.violazioni_recenti = associazione.violazioni_recenti + 1;
+                    } else {
+                        delete(violazioneVelocità.ultima_violazione_velocità);
+                        entrato.violazioni_recenti = associazione.violazioni_recenti;
+                    }
                     await Associazione.update(violazioneVelocità, {where: { id_associazione: associazione.id_associazione }});
+                    if (violazioneVelocità.violazioni_recenti > 5){
+                        let exists = await Segnalazione.findOne({where:{'stato':'IN CORSO','id_associazione':associazione.id_associazione}});
+                        if (exists == null){
+                            const segnalazione = {
+                                data_inizio: Sequelize.literal('CURRENT_TIMESTAMP(3)'),
+                                stato:"IN CORSO",
+                                id_associazione:associazione.id_associazione
+                            }
+                            await Segnalazione.create(segnalazione);
+                            //segnalazioni.push(segnalazione);
+                        }
+                    }
                 }
             }
         }
@@ -237,10 +278,30 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
                 evento:"Entrata",
                 id_associazione:associazione.id_associazione
             }
+            if (entrato.violazioni_recenti > 5){
+                let exists = await Segnalazione.findOne({where:{'stato':'IN CORSO','id_associazione':associazione.id_associazione}});
+                if (exists == null){
+                    const segnalazione = {
+                        data_inizio: Sequelize.literal('CURRENT_TIMESTAMP(3)'),
+                        stato:"IN CORSO",
+                        id_associazione:associazione.id_associazione
+                    }
+                    await Segnalazione.create(segnalazione);
+                    //segnalazioni.push(segnalazione);
+                }
+            }
+            
             eventi.push(data);
         }
         
     }
+    /*
+    let result = [];
+    result.push(eventi);
+    if (segnalazioni != null){
+        result.push(segnalazioni)
+    }
+    */
     return eventi;
 };
 /**
