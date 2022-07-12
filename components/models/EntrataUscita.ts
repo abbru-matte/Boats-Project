@@ -22,6 +22,12 @@ export const EntrataUscita = sequelize.define('entrate_uscite', {
         type: DataTypes.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP(3)')
     },
+    mmsi:{
+        type: DataTypes.INTEGER()
+    },
+    nome_geofence:{
+        type: DataTypes.STRING()
+    }
 }, 
 {
     modelName: 'entrate_uscite',

@@ -58,6 +58,29 @@ const { Op } = require("sequelize");
     }
 };
 /**
+ * Funzione che verifica che l'username specificato nel payload del token JWT
+ * sia presente nel DB con ruolo admin o user
+ * @param req richiesta
+ * @param res risposta
+ * @param next successivo
+ */
+ export async function checkAdminUserJWT(req,res,next) {
+    try{ 
+        const check = await Users.findUser(req.username).then((user) => { 
+            if(user) return user;
+            else return false;
+        });
+        if (!check || (check.ruolo !== "admin" && check.ruolo!== "user")){
+            let error = new Error(`Non è stato trovato nessun utente con username ${req.username} e ruolo admin o user`);
+            next(error)
+        } else {
+            next()
+        }
+    }catch(error){
+        next(error);
+    }
+};
+/**
  * Funzione che verifica che l'utente possieda credito sufficiente per l'invio dei dati
  * @param req richiesta
  * @param res risposta
@@ -119,13 +142,16 @@ export async function checkPostGeofence (req:any,res:any,next:any){
             res.status_message = "Bad Request";
         }
         else{
-                await Geofences.Geofence.create(req.body).then((geofences:any) =>{
+            errorResp = await Geofences.validatorBodyGeofence(req.body);
+            if(!(errorResp instanceof Error)){
+                await Geofences.Geofence.create(req.body).then(async(geofences:any) =>{
                     res.message = "Geofence creata";
                     res.status_code = 201;
                     res.status_message = "Created";
                     res.data = {"nome_area":geofences.nome_area};
                     next();
                 });
+            }
         } 
     }catch(error){
         next(error)
@@ -222,7 +248,7 @@ export async function checkPostGeofence (req:any,res:any,next:any){
                 delete datiIstantanei['latitudine'];
                 delete datiIstantanei['longitudine'];
 
-                let dati = await DatiIstantanei.DatoIstantaneo.create(datiIstantanei);
+                let dati:any = await DatiIstantanei.DatoIstantaneo.create(datiIstantanei);
                 await Users.scalaCredito(req.username);
                 await Associazioni.findAllAssociazioni(datiIstantanei.mmsi).then(async (associazioni)=>{
                     if (associazioni){
@@ -233,6 +259,7 @@ export async function checkPostGeofence (req:any,res:any,next:any){
                             for(const evento of eventi){
                                 await EntrateUscite.EntrataUscita.create(evento);
                             }
+                            dati.velocità = Number(dati.velocità)
                             res.message = "Dati inviati";
                             res.status_code = 201;
                             res.status_message = "Created";
@@ -289,6 +316,10 @@ export async function getAllImbarcazioni(req:any,res:any,next:any) {
     let errorResp:any;
     try{
             await Imbarcazioni.Imbarcazione.findAll().then((imbarcazioni:any) =>{
+            for(const imbarcazione of imbarcazioni){
+                imbarcazione.lunghezza = Number(imbarcazione.lunghezza);
+                imbarcazione.peso = Number(imbarcazione.peso);
+            }
             res.message = "Richiesta avvenuta con successo";
             res.status_code = 200;
             res.status_message = "OK";
@@ -380,7 +411,7 @@ export async function getAllGeofences(req:any,res:any,next:any) {
  export async function getEntrateUscite(req:any,res:any,next:any) {
     let errorResp:any;
     try{
-            await EntrateUscite.EntrataUscita.findAll().then((eventi:any) =>{
+            await EntrateUscite.EntrataUscita.findAll({attributes:['id_evento','evento','data_evento','mmsi','nome_geofence']}).then((eventi:any) =>{
             res.message = "Richiesta avvenuta con successo";
             res.status_code = 200;
             res.status_message = "OK";
@@ -493,6 +524,9 @@ export async function getAllGeofences(req:any,res:any,next:any) {
             errorResp = await Imbarcazioni.validatorMmsiPosizione(req.params);
             if(!(errorResp instanceof Error)){
                 await DatiIstantanei.getPosizioniFiltrate(req.params).then((dati:any) =>{
+                    for (const dato of dati){
+                        dato.velocità = Number(dato.velocità);
+                    }
                     res.message = "Richiesta avvenuta con successo";
                     res.status_code = 200;
                     res.status_message = "OK";

@@ -39,3 +39,19 @@ export const Geofence = sequelize.define('geofences', {
     }
     return result;
 };
+/**
+ * Controlla l'esistenza dell'imbarcazione specificata nella richiesta 
+ * e verifica che sia posseduta dall'utente che invia i dati
+ * @param dati contiene i dati istantanei da validare
+ * @param proprietario è l'utente che fa la richiesta
+ * @returns Ritorna true se la validazione è andata a buon fine, altrimenti l'errore relativo
+ */
+ export async function validatorBodyGeofence(dati:any):Promise<any>{
+    const checkGeofence = await findGeofence(dati.nome_area).then((geofence) => { 
+        if(geofence) return geofence;
+        else return false;
+    });
+
+    if(checkGeofence) return new Error(`Esiste già una geofence con nome ${dati.nome_area}` );
+    return "Post OK";
+}

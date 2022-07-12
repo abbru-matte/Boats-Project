@@ -49,12 +49,17 @@ export const Imbarcazione = sequelize.define('imbarcazione',
  */
 
 export async function validatorBodyImbarcazione(imbarcazione:any):Promise<any>{
-    const check = await User.findUser(imbarcazione.proprietario).then((user) => { 
+    const checkUser = await User.findUser(imbarcazione.proprietario).then((user) => { 
         if(user) return user;
         else return false;
     });
-    if(!check) return new Error("Il proprietario dell'imbarcazione deve essere un utente esistente");
-    return true
+    const checkImbarcazione = await findImbarcazione(imbarcazione.mmsi).then((imbarcazione) => { 
+        if(imbarcazione) return imbarcazione;
+        else return false;
+    });
+    if(!checkUser) return new Error("Il proprietario dell'imbarcazione deve essere un utente esistente");
+    if (checkImbarcazione) return new Error(`Esiste già un'imbarcazione con mmsi ${imbarcazione.mmsi}`)
+    return "Post OK";
 }
 /**
  * Controlla l'esistenza dell'imbarcazione specificata nella richiesta 
@@ -70,7 +75,7 @@ export async function validatorBodyDatiIstantanei(dati:any,proprietario:string):
     });
 
     if(!checkImbarcazione) return new Error("L'mmsi deve corrispondere ad una imbarcazione esistente e posseduta");
-    return true
+    return "Post OK";
 }
 /**
  * Controlla l'esistenza dell'imbarcazione specificata nella richiesta 
@@ -85,7 +90,7 @@ export async function validatorBodyDatiIstantanei(dati:any,proprietario:string):
     });
 
     if(!checkImbarcazione) return new Error("L'mmsi deve corrispondere ad una imbarcazione esistente");
-    return true
+    return "Post OK";
 }
 /**
  * Cerca la corrispondenza dell'mmsi nella tabella imbarcazioni

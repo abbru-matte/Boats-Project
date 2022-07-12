@@ -7,7 +7,7 @@ import * as d3 from 'd3-geo'
 import * as EntrateUscite from "./EntrataUscita";
 import { Segnalazione } from "./Segnalazione";
 const sequelize: Sequelize = DatabaseSingleton.getInstance().getConnessione();
-
+const timeouts = new Map();
 /**
  * Oggetto Associazione  per la tabella associazioni del DB
  */
@@ -73,7 +73,7 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
     if(!checkGeofence) return new Error("Il nome dell'area deve essere una geofence esistente");
     if(!checkImbarcazione) return new Error("L'mmsi deve corrispondere ad una imbarcazione esistente");
     if(checkPostAssociazione) return new Error("L'associazione che si vuole creare è già esistente");
-    return true
+    return "Post OK";
 }
 /**
  * Controlla l'esistenza della geofence e dell'imbarcazione 
@@ -189,7 +189,7 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
     }
 
     let eventi = [];
-    let segnalazioni = [];
+   
     for(const associazione of associazioniAttive){
         let geo = geofences.filter(element => element.nome_area === associazione.nome_geofence);
         let check = d3.geoContains(geo[0].geometria,datiIstantanei.posizione.coordinates)
@@ -200,15 +200,16 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
             await Associazione.update(uscito, {where: { id_associazione: associazione.id_associazione }});
             const data = {
                 evento:"Uscita",
-                id_associazione:associazione.id_associazione
+                id_associazione:associazione.id_associazione,
+                mmsi:associazione.mmsi_imbarcazione,
+                nome_geofence:associazione.nome_geofence
             }
             
             let updated:any = await Associazione.findOne({where:{ id_associazione: associazione.id_associazione }})
             let tempo = updated.ultima_uscita.getTime();
-                console.log("Data uscita per subject "+tempo);
-                setTimeout(async () => {
+                const timeout = setTimeout(async () => {
+                    console.log("Finito il tempo")
                     await Associazione.findOne({where:{"id_associazione": updated.id_associazione} }).then(async(associazione:any)=>{
-                        console.log("Ultima uscita "+ associazione.ultima_uscita.getTime())
                         if (associazione != null){
                             if (associazione.inside == false && (associazione.ultima_uscita.getTime() == tempo)){
                                 let result:any =  await Segnalazione.findOne({where:{"id_associazione": updated.id_associazione,"stato":"IN CORSO"} })
@@ -224,14 +225,15 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
                             }
                         }
                     });
-                }, 1000*20);
+                }, 86400*1000*2); //countdown di due giorni in ms
+                timeouts.set(associazione.id_associazione,timeout);
             eventi.push(data);
         } else {
             //Si è all'interno della geofence, si è superato il limite di velocità
             //ed è passata più di 1h(in ms) dall'ultima volta, aumenta di 1 il numero di violazioni
             if (geo[0].vel_max != null){
                 if (Number(datiIstantanei.velocità) >= geo[0].vel_max){
-                    if(associazione.ultima_violazione_velocità == null || ((Date.now() + 7200000 - associazione.ultima_violazione_velocità.getTime()) > 0)){
+                    if(associazione.ultima_violazione_velocità == null || ((Date.now() + 7200000 - associazione.ultima_violazione_velocità.getTime()) > 3600000)){
                         violazioneVelocità.violazioni_recenti = associazione.violazioni_recenti + 1;
                     } else {
                         delete(violazioneVelocità.ultima_violazione_velocità);
@@ -261,6 +263,9 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
         let check = d3.geoContains(geo[0].geometria,datiIstantanei.posizione.coordinates)
         //Se check è true si è entrati nella geofence
         if (check == true){
+            //Annulla il countdown dall'ultima uscita perchè l'imbarcazione è rientrata nella geofence nel frattempo
+            clearTimeout(timeouts.get(associazione.id_associazione));
+            timeouts.delete(associazione.id_associazione);
             //La violazione conta solo se è passata più di un'ora dalla precedente violazione della stessa geofence
             if(associazione.ultima_violazione_ingresso == null || ((Date.now() + 7200000 - associazione.ultima_violazione_ingresso.getTime()) > 3600000)){
                 entrato.violazioni_recenti = associazione.violazioni_recenti + 1;
@@ -277,7 +282,9 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
             await Associazione.update(entrato, {where: { id_associazione: associazione.id_associazione }});
             const data = {
                 evento:"Entrata",
-                id_associazione:associazione.id_associazione
+                id_associazione:associazione.id_associazione,
+                mmsi:associazione.mmsi_imbarcazione,
+                nome_geofence:associazione.nome_geofence
             }
             if (entrato.violazioni_recenti > 5){
                 let exists = await Segnalazione.findOne({where:{'stato':'IN CORSO','id_associazione':associazione.id_associazione}});

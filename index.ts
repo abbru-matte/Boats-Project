@@ -85,8 +85,8 @@ app.get('/getAssociazioni', auth.checkRoleUser,validator.checkUserJWT,validator.
 app.get('/getCredito', auth.checkRoleUser,validator.checkUserJWT,validator.getCredito, errorHandler, (req, res) => {
        responses.successResponseGET(res);
 });
-//Rotta user per ottenere tutte le proprie associazioni tramite GET
-app.get('/getSegnalazioni', auth.checkRoleUser,validator.checkUserJWT,validator.getSegnalazioni, errorHandler, (req, res) => {
+//Rotta admin o user per ottenere tutte le segnalazioni per le imbarcazioni tramite GET
+app.get('/getSegnalazioni', auth.checkRole,validator.checkAdminUserJWT,validator.getSegnalazioni, errorHandler, (req, res) => {
        responses.successResponseGET(res);
 });
 

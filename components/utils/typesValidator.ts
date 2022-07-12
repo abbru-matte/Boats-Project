@@ -2,7 +2,7 @@ export const validatorDatiImbarcazione = (imbarcazione:any):boolean => {
  
     return (typeof imbarcazione.nome_imbarcazione == "string" &&
     typeof imbarcazione.proprietario == "string" &&
-    (Number.isInteger(imbarcazione.mmsi) && imbarcazione.mmsi>0 ) &&
+    (Number.isInteger(imbarcazione.mmsi) && imbarcazione.mmsi>0 && imbarcazione.mmsi.toString().length == 9 ) &&
     (!isNaN(parseFloat(imbarcazione.lunghezza)) && imbarcazione.lunghezza>0 ) &&
     (!isNaN(parseFloat(imbarcazione.peso)) && imbarcazione.peso>0 ))
   

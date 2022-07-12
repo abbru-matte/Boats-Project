@@ -42,6 +42,25 @@ export const verifyAndAuthenticate = (req,res,next) => {
     }
 };
 /**
+ * Funzione che verifica che il token JWT contenga nel payload il ruolo admin o user
+ * @param req richiesta
+ * @param res risposta
+ * @param next successivo
+ */
+ export const checkRole = (req,res,next) => {
+    try{  
+        if(req.param === "admin" || req.param === "user"){
+            req.username = req.user;
+            next();
+        }else{
+            let error = new Error("Solo un utente admin o user può eseguire questa operazione") 
+            next(error);
+        }
+    }catch(error){
+        next(error);
+    }
+};
+/**
  * Funzione che verifica che il token JWT contenga nel payload il ruolo admin
  * @param req richiesta
  * @param res risposta
