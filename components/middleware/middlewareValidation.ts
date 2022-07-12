@@ -233,11 +233,6 @@ export async function checkPostGeofence (req:any,res:any,next:any){
                             for(const evento of eventi){
                                 await EntrateUscite.EntrataUscita.create(evento);
                             }
-                            /*
-                            for (const segnalazione of eventi[1]){
-                                await Segnalazioni.Segnalazione.create(segnalazione);
-                            }
-                            */
                             res.message = "Dati inviati";
                             res.status_code = 201;
                             res.status_message = "Created";
@@ -541,7 +536,8 @@ export async function getAllGeofences(req:any,res:any,next:any) {
  */
  export async function getSegnalazioni(req:any,res:any,next:any) {
     try{
-        await Segnalazioni.Segnalazione.findAll().then((segnalazioni:any) =>{
+        await Segnalazioni.Segnalazione.findAll({attributes:['id_segnalazione','data_inizio','data_fine','stato','mmsi','nome_geofence']})
+        .then((segnalazioni:any) =>{
             res.message = "Richiesta avvenuta con successo";
             res.status_code = 200;
             res.status_message = "OK";

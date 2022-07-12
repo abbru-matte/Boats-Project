@@ -46,7 +46,9 @@ CREATE TABLE segnalazioni(
   data_inizio timestamp,
   data_fine timestamp,
   stato varchar(50) NOT NULL,
-  id_associazione INT NOT NULL
+  id_associazione INT NOT NULL,
+  mmsi INT NOT NULL,
+  nome_geofence varchar(50) NOT NULL
   );
 
 CREATE TABLE entrate_uscite(
@@ -146,6 +148,6 @@ INSERT INTO associazioni (nome_geofence,inside,mmsi_imbarcazione,violazioni_rece
   ('Paradis', 'true',123456789,0,'2022-07-08T15:24:35+00:00','2022-07-08T15:24:35+00:00','2022-07-05T15:24:35+00:00','2022-07-07T15:24:35+00:00'),
   ('Smallville', 'false',123456789,0,'2022-07-04T11:24:35+00:00','2022-07-04T11:24:35+00:00','2022-07-05T15:24:35+00:00','2022-07-05T15:24:35+00:00'),
   ('Marley', 'false',123456789,0,'2022-07-05T13:24:35+00:00','2022-07-05T13:24:35+00:00','2022-07-05T15:24:35+00:00','2022-07-06T15:24:35+00:00');
-INSERT INTO segnalazioni (data_inizio, data_fine, stato,id_associazione) 
+INSERT INTO segnalazioni (data_inizio, data_fine, stato,id_associazione,mmsi,nome_geofence) 
   VALUES 
-  ('2022-07-05T15:24:35+00:00', '2022-07-07T15:24:35+00:00', 'RIENTRATA',1);
+  ('2022-07-05T15:24:35+00:00', '2022-07-07T15:24:35+00:00', 'RIENTRATA',1,123456789,'Gotham');

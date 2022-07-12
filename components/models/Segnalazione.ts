@@ -32,6 +32,12 @@ export const Segnalazione = sequelize.define('segnalazioni', {
     },
     id_associazione: {
         type: DataTypes.INTEGER
+    },
+    mmsi:{
+        type: DataTypes.INTEGER()
+    },
+    nome_geofence:{
+        type: DataTypes.STRING()
     }
 
 }, 

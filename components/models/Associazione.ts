@@ -244,10 +244,11 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
                             const segnalazione = {
                                 data_inizio: Sequelize.literal('CURRENT_TIMESTAMP(3)'),
                                 stato:"IN CORSO",
-                                id_associazione:associazione.id_associazione
+                                id_associazione:associazione.id_associazione,
+                                mmsi: associazione.mmsi_imbarcazione,
+                                nome_geofence: associazione.nome_geofence
                             }
                             await Segnalazione.create(segnalazione);
-                            //segnalazioni.push(segnalazione);
                         }
                     }
                 }
@@ -284,10 +285,11 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
                     const segnalazione = {
                         data_inizio: Sequelize.literal('CURRENT_TIMESTAMP(3)'),
                         stato:"IN CORSO",
-                        id_associazione:associazione.id_associazione
+                        id_associazione:associazione.id_associazione,
+                        mmsi: associazione.mmsi_imbarcazione,
+                        nome_geofence: associazione.nome_geofence
                     }
                     await Segnalazione.create(segnalazione);
-                    //segnalazioni.push(segnalazione);
                 }
             }
             
@@ -295,13 +297,6 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
         }
         
     }
-    /*
-    let result = [];
-    result.push(eventi);
-    if (segnalazioni != null){
-        result.push(segnalazioni)
-    }
-    */
     return eventi;
 };
 /**
