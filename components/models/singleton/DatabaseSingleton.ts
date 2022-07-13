@@ -3,8 +3,7 @@ require('dotenv').config();
 import { Sequelize } from 'sequelize';
 
 /**
- * Singleton per verificare di avese una sola connessione 
- * al DB
+ * Permette di assicurarsi di avere una sola connessione al Database
  */
 export class DatabaseSingleton {
     private static instance: DatabaseSingleton;

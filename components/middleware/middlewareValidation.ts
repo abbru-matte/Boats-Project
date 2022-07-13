@@ -105,15 +105,16 @@ export async function checkCredito(req,res,next) {
 export async function checkPostNewBoat (req:any,res:any,next:any){
     let errorResp:any;
     try{
-        if(!typesValidator.validatorDatiImbarcazione(req.body)){
-            errorResp = new Error("Inserire i dati del payload della richiesta in un formato valido")
-            res.status_code = 400;
-            res.status_message = "Bad Request";
+        let dati = validaDati(req.body);
+        //Controlla se sono presenti tutti i dati richiesti, altrimenti lancia un errore
+        if (dati.mmsi == undefined || dati.proprietario == undefined || dati.nome_imbarcazione == undefined || 
+            dati.lunghezza == undefined || dati.peso == undefined)
+        {
+            throw new Error("Inserire nella richiesta tutti i campi necessari")
         }
-        else{
-            errorResp = await Imbarcazioni.validatorBodyImbarcazione(req.body);
+            errorResp = await Imbarcazioni.validatorBodyImbarcazione(dati);
             if(!(errorResp instanceof Error)){
-                await Imbarcazioni.Imbarcazione.create(req.body).then((imbarcazione:any) =>{
+                await Imbarcazioni.Imbarcazione.create(dati).then((imbarcazione:any) =>{
                     res.message = "Imbarcazione creata";
                     res.status_code = 201;
                     res.status_message = "Created";
@@ -121,8 +122,10 @@ export async function checkPostNewBoat (req:any,res:any,next:any){
                     next();
                 });
             }
-        } 
+        
     }catch(error){
+        res.status_code = 400;
+        res.status_message = "Bad Request";
         next(error)
     }
     next(errorResp);
@@ -136,23 +139,27 @@ export async function checkPostNewBoat (req:any,res:any,next:any){
 export async function checkPostGeofence (req:any,res:any,next:any){
     let errorResp:any;
     try{
-        if(!typesValidator.validatorDatiGeofence(req.body)){
-            errorResp = new Error("Inserire i dati del payload della richiesta in un formato valido")
-            res.status_code = 400;
-            res.status_message = "Bad Request";
+        let dati = validaDati(req.body);
+         //Controlla se sono presenti tutti i dati richiesti, altrimenti lancia un errore
+         if (dati.nome_area == undefined || dati.coordinate == undefined)
+        {
+            throw new Error("Inserire nella richiesta tutti i campi necessari")
         }
-        else{
-            errorResp = await Geofences.validatorBodyGeofence(req.body);
-            if(!(errorResp instanceof Error)){
-                await Geofences.Geofence.create(req.body).then(async(geofences:any) =>{
-                    res.message = "Geofence creata";
-                    res.status_code = 201;
-                    res.status_message = "Created";
-                    res.data = {"nome_area":geofences.nome_area};
-                    next();
-                });
-            }
-        } 
+        dati.geometria = {};
+        dati.geometria.coordinates = dati.coordinate
+        dati.geometria.type = "Polygon";
+        
+        errorResp = await Geofences.validatorBodyGeofence(dati);
+        if(!(errorResp instanceof Error)){
+            await Geofences.Geofence.create(dati).then(async(geofences:any) =>{
+                res.message = "Geofence creata";
+                res.status_code = 201;
+                res.status_message = "Created";
+                res.data = {"nome_area":geofences.nome_area};
+                next();
+            });
+        }
+        
     }catch(error){
         next(error)
     }
@@ -167,15 +174,15 @@ export async function checkPostGeofence (req:any,res:any,next:any){
  export async function checkPostAssociazione (req:any,res:any,next:any){
     let errorResp:any;
     try{
-        if(!typesValidator.validatorDatiAssociazione(req.body)){
-            errorResp = new Error("Inserire i dati del payload della richiesta in un formato valido")
-            res.status_code = 400;
-            res.status_message = "Bad Request";
+        let dati = validaDati(req.body);
+        //Controlla se sono presenti tutti i dati richiesti, altrimenti lancia un errore
+        if (dati.nome_geofence == undefined || dati.mmsi_imbarcazione == undefined)
+        {
+            throw new Error("Inserire nella richiesta tutti i campi necessari")
         }
-        else{
-            errorResp = await Associazioni.validatorBodyAssociazione(req.body);
+            errorResp = await Associazioni.validatorBodyAssociazione(dati);
             if(!(errorResp instanceof Error)){
-                await Associazioni.Associazione.create(req.body).then((associazione:any) =>{
+                await Associazioni.Associazione.create(dati).then((associazione:any) =>{
                     res.message = "Associazione creata";
                     res.status_code = 201;
                     res.status_message = "Created";
@@ -185,8 +192,9 @@ export async function checkPostGeofence (req:any,res:any,next:any){
                     next();
                 });
             }
-        } 
     }catch(error){
+        res.status_code = 400;
+        res.status_message = "Bad Request";
         next(error)
     }
     next(errorResp);
@@ -199,27 +207,28 @@ export async function checkPostGeofence (req:any,res:any,next:any){
  export async function checkRicaricaUtente (req:any,res:any,next:any){
     let errorResp:any;
     try{
-        if(!typesValidator.validatorDatiRicarica(req.body)){
-            errorResp = new Error("Inserire i dati del payload della richiesta in un formato valido")
-            res.status_code = 400;
-            res.status_message = "Bad Request";
+        let dati = validaDati(req.body);
+        //Controlla se sono presenti tutti i dati richiesti, altrimenti lancia un errore
+        if (dati.credito == undefined || dati.mail == undefined){
+            throw new Error("Inserire nella richiesta tutti i campi necessari")
         }
-        else{
-            errorResp = await Users.validatorRicaricaUtente(req.body.mail);
-            if(!(errorResp instanceof Error)){  
-                const user = {
-                    credito: req.body.credito,
-                }
-                await Users.User.update(user, {where: { mail:req.body.mail }}).then(()=>{
-                    res.message = "Credito aggiornato";
-                    res.status_code = 200;
-                    res.status_message = "OK";
-                    next();
-                })           
-                   
+        errorResp = await Users.validatorRicaricaUtente(dati.mail);
+        if(!(errorResp instanceof Error)){  
+            const user = {
+                credito: dati.credito,
             }
-        } 
+            await Users.User.update(user, {where: { mail:req.body.mail }}).then(()=>{
+                res.message = "Credito aggiornato";
+                res.status_code = 200;
+                res.status_message = "OK";
+                next();
+            })           
+                
+        }
+    
     }catch(error){
+        res.status_code = 400;
+        res.status_message = "Bad Request";
         next(error)
     }
     next(errorResp);
@@ -233,18 +242,13 @@ export async function checkPostGeofence (req:any,res:any,next:any){
  export async function checkPostInvioDati (req:any,res:any,next:any){
     let errorResp:any;
     try{
-        if(!typesValidator.validatorDatiIstantanei(req.body)){
-            errorResp = new Error("Inserire i dati del payload della richiesta in un formato valido")
-            res.status_code = 400;
-            res.status_message = "Bad Request";
-        }
-        else{
+        let datiIstantanei = validaDati(req.body);
             errorResp = await Imbarcazioni.validatorBodyDatiIstantanei(req.body,req.username);
             if(!(errorResp instanceof Error)){
-                let datiIstantanei = req.body;
+
                 datiIstantanei.posizione = {};
                 datiIstantanei.posizione.type = "Point";
-                datiIstantanei.posizione.coordinates = [req.body.longitudine,req.body.latitudine];
+                datiIstantanei.posizione.coordinates = [datiIstantanei.longitudine,datiIstantanei.latitudine];
                 delete datiIstantanei['latitudine'];
                 delete datiIstantanei['longitudine'];
 
@@ -268,9 +272,10 @@ export async function checkPostGeofence (req:any,res:any,next:any){
                         })
                     }    
                 });            
-        } 
     }
     }catch(error){
+        res.status_code = 400;
+        res.status_message = "Bad Request";
         next(error)
     }
     next(errorResp);
@@ -582,3 +587,10 @@ export async function getAllGeofences(req:any,res:any,next:any) {
         next(error)
     }
 };
+function validaDati(body:any){
+    let dati = new Proxy({}, typesValidator.validatorProxyHandler);
+    for (const key of Object.keys(body)){
+        dati[key] = body[key];
+    }
+    return dati;
+}
