@@ -153,20 +153,22 @@ Rotta di tipo GET che permette ad un utente di ruolo admin di visualizzare tutti
 Rotta di tipo GET che permette ad un utente di ruolo admin di visualizzare tutti gli eventi di entrata e uscita di ogni associazione registrati nel Database attraverso l'invio di dati istantanei degli utenti.
 
 ### Visualizzazione dello stato di tutte le imbarcazioni associate a una Geofence (/getStatoImbarcazioni/:geofence)
-Rotta di tipo GET che permette ad un utente di ruolo admin di visualizzare lo stato  di tutte le imbarcazioni in una Geofence prestabilita. Si deve inserire il parametro Geofence. Un esempio di rotta valida è: /getStatoImbarcazioni/gotham
+Rotta di tipo GET che permette ad un utente di ruolo admin di visualizzare lo stato  di tutte le imbarcazioni in una Geofence prestabilita. Si deve inserire come parametro il nome della Geofence. Un esempio di rotta valida è: /getStatoImbarcazioni/gotham
 
 ### Visualizzazione delle posizioni di una imbarcazione in un intervallo temporale (/getPosizioni/:mmsi/:dataInizio/:dataFine)
-Rotta di tipo GET che permette ad un utente di ruolo admin di visualizzare
+Rotta di tipo GET che permette ad un utente di ruolo admin di visualizzare la posizione di una imbarcazione in un determinato intervallo temporale. I parametri da inserire nella rotta sono il codice mmsi dell'imbarcazione, la data d'inizio e la data di fine dell'intervallo. Un esempio di rotta valida è: /getPosizioni/123456789/2022-07-01/2022-07-10
 
 ### Visualizzazione (/getSegnalazioni)
-Rotta di tipo GET che permette ad un utente di ruolo admin di visualizzare
+Rotta di tipo GET che permette ad un utente di ruolo admin di visualizzare tutte le segnalazioni partite con il relativo stato (in corso o rientrata).
 
 ### Visualizzazione (/getStatoImbarcazioniUser/:geofence)
+Rotta di tipo GET che permette ad un utente di ruolo user di visualizzare se le proprie imbarcazioni si trovino all'interno o all'esterno di una Geofence e, per le imbarcazioni che si trovano all'interno, il tempo di permanenza in essa. Si deve inserire come parametro il nome della Geofence. Un esempio di rotta valida è: /getStatoImbarcazioniUser/gotham
 
 ### Visualizzazione (/getAssociazioni)
+Rotta di tipo GET che permette ad un utente di ruolo user di visualizzare l'elenco delle associazioni tra le proprie imbarcazioni e le Geofences a loro associate.
 
 ### Visualizzazione (/getCredito)
-
+Rotta di tipo GET che permette ad un utente di ruolo user di visualizzare il proprio credito.
 
 ## Diagrammi UML
 
