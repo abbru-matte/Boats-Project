@@ -301,7 +301,18 @@ Middleware Validation ->> Chain of Responsibility : next()
 Chain of Responsibility ->> Middleware Validation : checkRicaricaUtente()
 Middleware Validation ->> Proxy : validaDati()
 Proxy ->> Middleware Validation : Dati validati
-Middleware Validation ->> Model : validatorRicaricaUtent
+Middleware Validation ->> Model : validatorRicaricaUtente()
+Model ->> Database : findUserByMail()
+Database ->> Model : utente
+Model ->> Middleware Validation : utente
+Middleware Validation ->> Model : User.update(credito)
+Model ->> Database : update(credito)
+Database ->> Model : OK
+Model ->> Middleware Validation : OK
+Middleware Validation ->> Chain of Responsibility : next()
+Chain of Responsibility ->> App : response
+App ->> ResponseHTTP : successResponse(response)
+ResponseHTTP ->> Client : res.send(JSONresponse)
 ```
 
 ### delete Associazione
@@ -327,5 +338,23 @@ Model ->> Database : findUser()
 Database ->> Model : User
 Model ->> Middleware Validation : User
 Middleware Validation ->> Chain of Responsibility : next()
-
+Chain of Responsibility ->> Middleware Validation : checkDeleteAssociazione()
+Middleware Validation ->> Proxy : validaDati()
+Proxy ->> Middleware Validation : Dati validati
+Middleware Validation ->> Model : validatorDeleteAssociazione()
+Model ->> Database : Geofences.findGeofence()
+Database ->> Model : geofence
+Model ->> Database : Imbarcazioni.findImbarcazione()
+Database ->> Model : imbarcazione
+Model ->> Database : findOneAssociazione()
+Database ->> Model : associazione.id_associazione
+Model ->> Middleware Validation : id_associazione
+Middleware Validation ->> Model : Associazione.destroy(id_associazione)
+Model ->> Database : destroy(id_associazione)
+Database ->> Model : OK
+Model ->> Middleware Validation : OK
+Middleware Validation ->> Chain of Responsibility : next()
+Chain of Responsibility ->> App : response
+App ->> ResponseHTTP : successResponse(response)
+ResponseHTTP ->> Client : res.send(JSONresponse)
 ```
