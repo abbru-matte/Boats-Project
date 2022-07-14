@@ -84,8 +84,10 @@ Model ->> Database : Associazione.findAll()
 Database ->> Model : associazioni
 Model ->> Middleware Validation : associazioni
 Middleware Validation ->> Model : getGeofences()
-
-
+Model ->> Database : Geofences.findGeofence
+Database ->> Model : geofence
+Model ->> Middleware Validation : geofence
+Middleware Validation ->> Model : checkPosizione()
 ```
 
 ### put Ricarica Utente
