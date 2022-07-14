@@ -85,6 +85,7 @@ Database ->> Model : associazioni
 Model ->> Middleware Validation : associazioni
 Middleware Validation ->> Model : getGeofences()
 
+
 ```
 
 ### put Ricarica Utente
