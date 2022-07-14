@@ -1,5 +1,108 @@
 # Boats-Project
+## Rotte
+Di seguito l'elenco delle rotte. Qualsiasi rotta non implementata restituisce l'error 404 NOT FOUND
 
+<table align="center">
+    <thead>
+        <tr>
+            <th>Tipo</th>
+            <th>Rotta</th>
+            <th>Ruolo</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+         <td> POST </td>
+         <td> /creaImbarcazione </td>
+         <td> Admin </td>
+        </tr>
+        <tr>
+         <td> POST </td>
+         <td> /creaGeofence </td>
+         <td> Admin </td>
+        </tr>
+        <tr>
+         <td> POST </td>
+         <td> /creaImbarcazione </td>
+         <td> Admin </td>
+        </tr>
+        <tr>
+         <td> POST </td>
+         <td> /creaAssociazione </td>
+         <td> Admin </td>
+        </tr>
+      <tr>
+         <td> POST </td>
+         <td> /inviaDati </td>
+         <td> User </td>
+        </tr>
+        <tr>
+         <td> PUT </td>
+         <td> /ricaricaUtente </td>
+         <td> Admin </td>
+        </tr>
+        <tr>
+         <td> DELETE </td>
+         <td> /deleteAssociazione </td>
+         <td> Admin </td>
+        </tr>
+        <tr>
+         <td> GET </td>
+         <td> /getAllImbarcazioni </td>
+         <td> Admin </td>
+        </tr>
+        <tr>
+         <td> GET </td>
+         <td> /getAllGeofences </td>
+         <td> Admin </td>
+        </tr>
+        <tr>
+         <td> GET </td>
+         <td> /getAllUsers </td>
+         <td> Admin </td>
+        </tr>
+        <tr>
+         <td> GET </td>
+         <td> /getAllAssociazioni </td>
+         <td> Admin </td>
+        </tr>
+        <tr>
+         <td> GET </td>
+         <td> /getEntrateUscite </td>
+         <td> Admin </td>
+        </tr>
+        <tr>
+         <td> GET </td>
+         <td> /getStatoImbarcazioni/:geofence </td>
+         <td> Admin </td>
+        </tr>
+        <tr>
+         <td> GET </td>
+         <td> /getPosizioni/:mmsi/:dataInizio/:dataFine </td>
+         <td> Admin </td>
+        </tr>
+        <tr>
+         <td> GET </td>
+         <td> /getSegnalazioni </td>
+         <td> Admin </td>
+        </tr>
+        <tr>
+         <td> GET </td>
+         <td> /getStatoImbarcazioniUser/:geofence </td>
+         <td> User </td>
+        </tr>
+        <tr>
+         <td> GET </td>
+         <td> /getASsociazioni </td>
+         <td> User </td>
+        </tr>
+        <tr>
+         <td> GET </td>
+         <td> /getCredito </td>
+         <td> User </td>
+        </tr>
+    </tbody>
+ </table>
 ## Diagrammi UML
 ### Diagramma dei casi d'uso
 
