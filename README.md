@@ -26,11 +26,6 @@ Di seguito l'elenco delle rotte. Qualsiasi rotta non implementata restituisce l'
          <td> /creaAssociazione </td>
          <td> Admin </td>
         </tr>
-        <tr>
-         <td> POST </td>
-         <td> /creaAssociazione </td>
-         <td> Admin </td>
-        </tr>
       <tr>
          <td> POST </td>
          <td> /inviaDati </td>
@@ -173,8 +168,8 @@ Questa rotta, di tipo POST, permette di inserire una nuova Associazione tra una 
 
 I dati della nuova Associazione devono essere inseriti nel body della richiesta in formato JSON con la seguente struttura:
 
-* "nome_geofence": Identificativo univoco della Geofence. Deve esistere nel Database
-* "mmsi_imbarcazione": mmsi: Identificativo univoco dell'imbarcazione. È costituito da 9 cifre. Deve esistere nel Database
+* "nome_geofence": Identificativo univoco della Geofence. Deve esistere nel Database.
+* "mmsi_imbarcazione": mmsi: Identificativo univoco dell'imbarcazione. È costituito da 9 cifre. Deve esistere nel Database.
 
 Di seguito un esempio di body della richiesta valido:
 ~~~
@@ -184,12 +179,12 @@ Di seguito un esempio di body della richiesta valido:
 }
 ~~~
 #### Ricarica di un utente (/ricaricaUtente)
-Questa rotta, di tipo PUT, permette di ricaricare e impostare il nuovo credito di un utente identificato tramite mail.
+Questa rotta, di tipo PUT, permette di impostare il nuovo credito di un utente identificato tramite mail.
 
 I dati della ricarica devono essere inseriti nel body della richiesta in formato JSON con la seguente struttura:
 
 * "mail": Mail dell'utente a cui ricaricare il credito. Deve corrispondere a un utente esistente.
-* "credito": mmsi: Identificativo univoco dell'imbarcazione. È costituito da 9 cifre. Deve esistere nel Database
+* "credito": Nuovo credito dell'utente in token.
 
 Di seguito un esempio di body della richiesta valido:
 ~~~
@@ -203,8 +198,8 @@ Questa rotta, di tipo DELETE, permette di rimuovere un'associazione esistente tr
 
 I dati della ricarica devono essere inseriti nel body della richiesta in formato JSON con la seguente struttura:
 
-* "nome_geofence": Identificativo univoco della Geofence. Deve esistere nel Database
-* "mmsi_imbarcazione": mmsi: Identificativo univoco dell'imbarcazione. È costituito da 9 cifre. Deve esistere nel Database
+* "nome_geofence": Identificativo univoco della Geofence. Deve esistere nel Database.
+* "mmsi_imbarcazione": mmsi: Identificativo univoco dell'imbarcazione. È costituito da 9 cifre. Deve esistere nel Database.
 
 Di seguito un esempio di body della richiesta valido:
 ~~~
