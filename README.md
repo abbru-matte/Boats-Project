@@ -9,18 +9,18 @@ Di seguito l'elenco delle rotte. Qualsiasi rotta non implementata restituisce l'
 |POST|[/creaAssociazione](#inserimento-di-una-nuova-associazione-creaassociazione)|Admin|
 |POST|[/inviaDati](#invio-di-dati-istantanei-inviadati)|User|
 |PUT|[/ricaricaUtente](#ricarica-di-un-utente-ricaricautente)|Admin|
-|DELETE|[/deleteAssociazione](#rimozione-di-unassociazionedeleteassociazione)|Admin|
-|GET|[/getAllImbarcazioni](#visualizzazione-di-tutte-le-imbarcazionigetallimbarcazioni)|Admin|
-|GET|[/getAllGeofences](#visualizzazione-di-tutte-le-geofencesgetallgeofences)|Admin|
-|GET|[/getAllUsers](#visualizzazione-di-tutte-gli-utentigetallusers)|Admin|
-|GET|[/getAllAssociazioni](#visualizzazione-di-tutte-le-associazionigetallassociazioni)|Admin|
-|GET|[/getEntrateUscite](#visualizzazione-di-tutte-le-entrateeuscitegetentrateuscite)|Admin|
-|GET|[/getStatoImbarcazioni/:geofence](#visualizzazione-dello-stato-di-tutte-le-imbarcazioni-associate-a-una-geofencegetstatoimbarcazionigeofence)|Admin|
-|GET|[/getPosizioni/:mmsi/:dataInizio/:dataFine ](#visualizzazione-delle-posizioni-di-una-imbarcazione-in-un-intervallo-temporalegetposizionimmsidatainiziodatafine)|Admin|
-|GET|[/getSegnalazioni](#visualizzazione-di-tutte-le-segnalazionigetsegnalazioni)|Admin|
-|GET|[/getStatoImbarcazioniUser/:geofence ](#visualizzazione-dello-stato-di-tutte-le-imbarcazioni-associate-a-una-geofence-di-un-utentegetstatoimbarcazioniusergeofence)|User|
-|GET|[/getAssociazioni](#visualizzazione-di-tutte-le-associazioni-di-imbarcazioni-possedute-da-un-utentegetassociazioni)|Admin|
-|GET|[/getCredito](#visualizzazione-del-credito-di-un-utentegetcredito)|Admin|
+|DELETE|[/deleteAssociazione](#rimozione-di-unassociazione-deleteassociazione)|Admin|
+|GET|[/getAllImbarcazioni](#visualizzazione-di-tutte-le-imbarcazioni-getallimbarcazioni)|Admin|
+|GET|[/getAllGeofences](#visualizzazione-di-tutte-le-geofences-getallgeofences)|Admin|
+|GET|[/getAllUsers](#visualizzazione-di-tutte-gli-utenti-getallusers)|Admin|
+|GET|[/getAllAssociazioni](#visualizzazione-di-tutte-le-associazioni-getallassociazioni)|Admin|
+|GET|[/getEntrateUscite](#visualizzazione-di-tutte-le-entrate-e-uscite-getentrateuscite)|Admin|
+|GET|[/getStatoImbarcazioni/:geofence](#visualizzazione-dello-stato-di-tutte-le-imbarcazioni-associate-a-una-geofence-getstatoimbarcazionigeofence)|Admin|
+|GET|[/getPosizioni/:mmsi/:dataInizio/:dataFine ](#visualizzazione-delle-posizioni-di-una-imbarcazione-in-un-intervallo-temporale-getposizionimmsidatainiziodatafine)|Admin|
+|GET|[/getSegnalazioni](#visualizzazione-di-tutte-le-segnalazioni-getsegnalazioni)|Admin|
+|GET|[/getStatoImbarcazioniUser/:geofence ](#visualizzazione-dello-stato-di-tutte-le-imbarcazioni-associate-a-una-geofence-di-un-utente-getstatoimbarcazioniusergeofence)|User|
+|GET|[/getAssociazioni](#visualizzazione-di-tutte-le-associazioni-di-imbarcazioni-possedute-da-un-utente-getassociazioni)|User|
+|GET|[/getCredito](#visualizzazione-del-credito-di-un-utente-getcredito)|User|
 
  ### Autenticazione tramite JWT
  Tutte le rotte implementate richiedono che l'utente specifichi un token JWT valido nella richiesta. I token JWT possono essere generati tramite il seguente sito:
@@ -45,6 +45,7 @@ Per quanto riguarda il ruolo "user", un JWT valido sarà del tipo:
  ### Rotte Admin
  Per avere l'autorizzazione a chiamare le rotte admin, c'è bisogno di utilizzare un JWT che abbia specificato come ruolo 'admin'.
  Di seguito verranno descritte in dettaglio tutte le rotte previste per questo ruolo. Verrà dato per scontato il fatto di aver inserito nella richiesta un JWT valido.
+ 
 #### Inserimento di una nuova imbarcazione (/creaImbarcazione)
 Questa rotta permette di inserire una nuova imbarcazione.
 
@@ -66,6 +67,7 @@ Di seguito un esempio di body della richiesta valido:
     "peso": 1000
 }
 ~~~
+
 #### Inserimento di una nuova Geofence (/creaGeofence)
 Questa rotta permette di inserire una nuova Geofence Area.
 
@@ -86,6 +88,7 @@ Di seguito un esempio di body della richiesta valido:
     "vel_max": 50
 }
 ~~~
+
 #### Inserimento di una nuova Associazione (/creaAssociazione)
 Questa rotta, di tipo POST, permette di inserire una nuova Associazione tra una Geofence e un'imbarcazione.
 
@@ -101,6 +104,7 @@ Di seguito un esempio di body della richiesta valido:
     "mmsi_imbarcazione": 123456798
 }
 ~~~
+
 #### Ricarica di un utente (/ricaricaUtente)
 Questa rotta, di tipo PUT, permette di impostare il nuovo credito di un utente identificato tramite mail.
 
@@ -116,7 +120,8 @@ Di seguito un esempio di body della richiesta valido:
     "credito": 1100
 }
 ~~~
-#### Rimozione di un'associazione(/deleteAssociazione)
+
+#### Rimozione di un'associazione (/deleteAssociazione)
 Questa rotta, di tipo DELETE, permette di rimuovere un'associazione esistente tra una imbarcazione e una geofence.
 
 I dati della ricarica devono essere inseriti nel body della richiesta in formato JSON con la seguente struttura:
@@ -131,8 +136,38 @@ Di seguito un esempio di body della richiesta valido:
     "mmsi_imbarcazione": 123456789
 }
 ~~~
-#### Visualizzazione di tutte le imbarcazioni(/getAllImbarcazioni)
+
+#### Visualizzazione di tutte le imbarcazioni (/getAllImbarcazioni)
 Questa rotta, di tipo GET, permette di visualizzare i metadati di tutte le imbarcazioni presenti nel Database.
+
+### Visualizzazione di tutte le Geofences (/getAllGeofences)
+Rotta di tipo GET che permette ad un utente di ruolo admin di visualizzare tutte le geofences presenti nel Database.
+
+### Visualizzazione di tutti gli utenti (/getAllUsers)
+Rotta di tipo GET che permette ad un utente di ruolo admin di visualizzare tutti gli utenti presenti nel Database con i loro usernames, ruoli, mail e crediti.
+
+### Visualizzazione di tutte le associazioni (/getAllAssociazioni)
+Rotta di tipo GET che permette ad un utente di ruolo admin di visualizzare tutti le associazioni di imbarcazioni e Geofences presenti nel Database.
+
+### Visualizzazione di tutte le entrate e uscite (/getAllEntrateUscite)
+Rotta di tipo GET che permette ad un utente di ruolo admin di visualizzare tutti gli eventi di entrata e uscita di ogni associazione registrati nel Database attraverso l'invio di dati istantanei degli utenti.
+
+### Visualizzazione dello stato di tutte le imbarcazioni associate a una Geofence (/getStatoImbarcazioni/:geofence)
+Rotta di tipo GET che permette ad un utente di ruolo admin di visualizzare lo stato  di tutte le imbarcazioni in una Geofence prestabilita. Si deve inserire il parametro Geofence. Un esempio di rotta valida è: /getStatoImbarcazioni/gotham
+
+### Visualizzazione delle posizioni di una imbarcazione in un intervallo temporale (/getPosizioni/:mmsi/:dataInizio/:dataFine)
+Rotta di tipo GET che permette ad un utente di ruolo admin di visualizzare
+
+### Visualizzazione (/getSegnalazioni)
+Rotta di tipo GET che permette ad un utente di ruolo admin di visualizzare
+
+### Visualizzazione (/getStatoImbarcazioniUser/:geofence)
+
+### Visualizzazione (/getAssociazioni)
+
+### Visualizzazione (/getCredito)
+
+
 ## Diagrammi UML
 
 ### Diagramma dei casi d'uso
