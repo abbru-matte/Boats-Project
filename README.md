@@ -2,106 +2,29 @@
 ## Rotte
 Di seguito l'elenco delle rotte. Qualsiasi rotta non implementata restituisce l'error 404 NOT FOUND
 
-<table align="center">
-    <thead>
-        <tr>
-            <th>Tipo</th>
-            <th>Rotta</th>
-            <th>Ruolo</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-         <td> POST </td>
-         <td> /creaImbarcazione </td>
-         <td> Admin </td>
-        </tr>
-        <tr>
-         <td> POST </td>
-         <td> /creaGeofence </td>
-         <td> Admin </td>
-        </tr>
-        <tr>
-         <td> POST </td>
-         <td> /creaAssociazione </td>
-         <td> Admin </td>
-        </tr>
-      <tr>
-         <td> POST </td>
-         <td> /inviaDati </td>
-         <td> User </td>
-        </tr>
-        <tr>
-         <td> PUT </td>
-         <td> /ricaricaUtente </td>
-         <td> Admin </td>
-        </tr>
-        <tr>
-         <td> DELETE </td>
-         <td> /deleteAssociazione </td>
-         <td> Admin </td>
-        </tr>
-        <tr>
-         <td> GET </td>
-         <td> /getAllImbarcazioni </td>
-         <td> Admin </td>
-        </tr>
-        <tr>
-         <td> GET </td>
-         <td> /getAllGeofences </td>
-         <td> Admin </td>
-        </tr>
-        <tr>
-         <td> GET </td>
-         <td> /getAllUsers </td>
-         <td> Admin </td>
-        </tr>
-        <tr>
-         <td> GET </td>
-         <td> /getAllAssociazioni </td>
-         <td> Admin </td>
-        </tr>
-        <tr>
-         <td> GET </td>
-         <td> /getEntrateUscite </td>
-         <td> Admin </td>
-        </tr>
-        <tr>
-         <td> GET </td>
-         <td> /getStatoImbarcazioni/:geofence </td>
-         <td> Admin </td>
-        </tr>
-        <tr>
-         <td> GET </td>
-         <td> /getPosizioni/:mmsi/:dataInizio/:dataFine </td>
-         <td> Admin </td>
-        </tr>
-        <tr>
-         <td> GET </td>
-         <td> /getSegnalazioni </td>
-         <td> Admin </td>
-        </tr>
-        <tr>
-         <td> GET </td>
-         <td> /getStatoImbarcazioniUser/:geofence </td>
-         <td> User </td>
-        </tr>
-        <tr>
-         <td> GET </td>
-         <td> /getAssociazioni </td>
-         <td> User </td>
-        </tr>
-        <tr>
-         <td> GET </td>
-         <td> /getCredito </td>
-         <td> User </td>
-        </tr>
-    </tbody>
- </table>
- 
+|Tipo|Rotta|Ruolo|
+|:---:|:---:|:---:|
+|POST|[/creaImbarcazione](#inserimento-di-una-nuova-imbarcazione-creaimbarcazione)|Admin|
+|POST|[/creaGeofence](#inserimento-di-una-nuova-geofence-creageofence)|Admin|
+|POST|[/creaAssociazione](#inserimento-di-una-nuova-associazione-creaassociazione)|Admin|
+|POST|[/inviaDati](#invio-di-dati-istantanei-inviadati)|User|
+|PUT|[/ricaricaUtente](#ricarica-di-un-utente-ricaricautente)|Admin|
+|DELETE|[/deleteAssociazione](#rimozione-di-unassociazionedeleteassociazione)|Admin|
+|GET|[/getAllImbarcazioni](#visualizzazione-di-tutte-le-imbarcazionigetallimbarcazioni)|Admin|
+|GET|[/getAllGeofences](#visualizzazione-di-tutte-le-geofencesgetallgeofences)|Admin|
+|GET|[/getAllUsers](#visualizzazione-di-tutte-gli-utentigetallusers)|Admin|
+|GET|[/getAllAssociazioni](#visualizzazione-di-tutte-le-associazionigetallassociazioni)|Admin|
+|GET|[/getEntrateUscite](#visualizzazione-di-tutte-le-entrateeuscitegetentrateuscite)|Admin|
+|GET|[/getStatoImbarcazioni/:geofence](#visualizzazione-dello-stato-di-tutte-le-imbarcazioni-associate-a-una-geofencegetstatoimbarcazionigeofence)|Admin|
+|GET|[/getPosizioni/:mmsi/:dataInizio/:dataFine ](#visualizzazione-delle-posizioni-di-una-imbarcazione-in-un-intervallo-temporalegetposizionimmsidatainiziodatafine)|Admin|
+|GET|[/getSegnalazioni](#visualizzazione-di-tutte-le-segnalazionigetsegnalazioni)|Admin|
+|GET|[/getStatoImbarcazioniUser/:geofence ](#visualizzazione-dello-stato-di-tutte-le-imbarcazioni-associate-a-una-geofence-di-un-utentegetstatoimbarcazioniusergeofence)|User|
+|GET|[/getAssociazioni](#visualizzazione-di-tutte-le-associazioni-di-imbarcazioni-possedute-da-un-utentegetassociazioni)|Admin|
+|GET|[/getCredito](#visualizzazione-del-credito-di-un-utentegetcredito)|Admin|
+
  ### Autenticazione tramite JWT
  Tutte le rotte implementate richiedono che l'utente specifichi un token JWT valido nella richiesta. I token JWT possono essere generati tramite il seguente sito:
-[JWT.IO](https://jwt.io/), tramite la chiave *'mysupersecretkeyboat'*.
+[JWT.IO](https://jwt.io/), tramite la chiave *mysupersecretkeyboat*.
 
 Il payload del JWT deve contenere i campi "username" e "ruolo". Questi valori vengono confrontati e validati se corrispondono a quelli presenti nel Database.
 
