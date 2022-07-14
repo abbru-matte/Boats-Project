@@ -23,7 +23,7 @@ Di seguito l'elenco delle rotte. Qualsiasi rotta non implementata restituisce l'
         </tr>
         <tr>
          <td> POST </td>
-         <td> /creaImbarcazione </td>
+         <td> /creaAssociazione </td>
          <td> Admin </td>
         </tr>
         <tr>
@@ -103,6 +103,51 @@ Di seguito l'elenco delle rotte. Qualsiasi rotta non implementata restituisce l'
         </tr>
     </tbody>
  </table>
+ 
+ ### Autenticazione tramite JWT
+ Tutte le rotte implementate richiedono che l'utente specifichi un token JWT valido nella richiesta. I token JWT possono essere generati tramite il seguente sito:
+[JWT.IO](https://jwt.io/), tramite la chiave *'mysupersecretkeyboat'*.
+
+Il payload del JWT deve contenere i campi "username" e "ruolo". Questi valori vengono confrontati e validati se corrispondono a quelli presenti nel Database.
+
+Di seguito un JWT valido per l'utente con username admin e ruolo admin
+~~~
+{
+    "username":"admin",
+    "ruolo":"admin"
+}
+~~~
+Per quanto riguarda il ruolo "user", un JWT valido sarà del tipo:
+~~~
+{
+    "username":"mario_rossi",
+    "ruolo":"user"
+}
+~~~
+ ### Rotte Admin
+ Per avere l'autorizzazione a chiamare le rotte admin, c'è bisogno di utilizzare un JWT che abbia specificato come ruolo 'admin'.
+ Di seguito verranno descritte in dettaglio tutte le rotte previste per questo ruolo. Verrà dato per scontato il fatto di aver inserito nella richiesta un JWT valido.
+#### Inserimento di una nuova imbarcazione (/creaImbarcazione)
+Questa rotta permette di inserire una nuova imbarcazione.
+
+I dati dell'imbarcazione devono essere inseriti nel body della richiesta in formato JSON con la seguente struttura:
+
+* "mmsi": Identificativo univoco dell'imbarcazione. È costituito da 9 cifre.
+* "proprietario": Username del proprietario dell'imbarcazione. Deve esistere nella tabella users.
+* "nome_imbarcazione": Nome dell'imbarcazione da inserire.
+* "lunghezza": Lunghezza in metri dell'imbarcazione da inserire
+* "peso": Peso in kg dell'imbarcazione da inserire
+
+Di seguito un esempio di body della richiesta valido:
+~~~
+{
+    "mmsi": 123456987,
+    "proprietario": "mario_rossi",
+    "nome_imbarcazione": "Nina",
+    "lunghezza": 20,
+    "peso": 1000
+}
+~~~
 ## Diagrammi UML
 
 ### Diagramma dei casi d'uso
