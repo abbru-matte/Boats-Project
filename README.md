@@ -193,11 +193,11 @@ Database ->> Model : geofence
 Model ->> Middleware Validation : geofence
 Middleware Validation ->> Model : checkPosizione()
 Model ->> Model : d3.geoContains()
-Model ->> Database : Associazione.update(entrato)
+Model ->> Database : if (entrato): Associazione.update(entrato)
 Database ->> Model : OK
 Model ->> Database : if (entrato.violazioni_recenti>5 && !exists): Segnalazione.create(segnalazione)
 Database ->> Model : Segnalazione
-Model ->> Database : Associazione.update(uscito)
+Model ->> Database : if (uscito): Associazione.update(uscito)
 Database ->> Model : OK
 Model ->> Model : setTimeOut(2 giorni)
 Model ->> Middleware Validation : eventi
