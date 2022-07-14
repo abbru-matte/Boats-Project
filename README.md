@@ -104,6 +104,7 @@ Di seguito l'elenco delle rotte. Qualsiasi rotta non implementata restituisce l'
     </tbody>
  </table>
 ## Diagrammi UML
+
 ### Diagramma dei casi d'uso
 
 ### Diagrammi delle sequenze
@@ -174,7 +175,7 @@ Middleware Validation ->> Proxy : validaDati()
 Proxy ->> Middleware Validation : Dati validati
 Middleware Validation ->> Model : validatorBodyDatiIstantanei()
 Model ->> Middleware Validation : OK
-Middleware Validation ->> Model : create(Dati validati)
+Middleware Validation ->> Model : DatoIstantaneo.create(Dati validati)
 Model ->> Database : create(Dati validati)
 Database ->> Model : DatoIstantaneo
 Model ->> Middleware Validation : DatoIstantaneo
@@ -191,6 +192,23 @@ Model ->> Database : Geofences.findGeofence
 Database ->> Model : geofence
 Model ->> Middleware Validation : geofence
 Middleware Validation ->> Model : checkPosizione()
+Model ->> Model : d3.geoContains()
+Model ->> Database : Associazione.update(entrato)
+Database ->> Model : OK
+Model ->> Database : if (entrato.violazioni_recenti>5 && !exists): Segnalazione.create(segnalazione)
+Database ->> Model : Segnalazione
+Model ->> Database : Associazione.update(uscito)
+Database ->> Model : OK
+Model ->> Model : setTimeOut(2 giorni)
+Model ->> Middleware Validation : eventi
+Middleware Validation ->> Model : EntrataUscita.create(eventi)
+Model ->> Database : create(eventi)
+Database ->> Model : EntrataUscita
+Model ->> Middleware Validation : EntrataUscita
+Middleware Validation ->> Chain of Responsibility : next()
+Chain of Responsibility ->> App : response
+App ->> ResponseHTTP : successResponsePOST(response)
+ResponseHTTP ->> Client : res.send(JSONresponse)
 ```
 
 ### put Ricarica Utente
