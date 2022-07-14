@@ -186,7 +186,6 @@ Middleware Validation ->> Chain of Responsibility : next()
 Chain of Responsibility ->> App : response
 App ->> ResponseHTTP : successResponseGET(response)
 ResponseHTTP ->> Client : res.send(JSONresponse)
-
 ```
 
 ### post Invio Dati Istantanei
@@ -258,5 +257,55 @@ ResponseHTTP ->> Client : res.send(JSONresponse)
 
 ### put Ricarica Utente
 
+```mermaid
+sequenceDiagram
+autonumber
+Client ->> App : /ricaricaUtente
+App ->> Chain of Responsibility : JWT
+Chain of Responsibility ->> Middleware Auth : checkHeader()
+Middleware Auth ->> Chain of Responsibility : next()
+Chain of Responsibility ->> Middleware Auth : checkToken()
+Middleware Auth ->> Chain of Responsibility : next()
+Chain of Responsibility ->> Middleware Auth : verifyAndAuthenticate()
+Middleware Auth ->> Chain of Responsibility : next()
+Chain of Responsibility ->> Middleware Auth : checkRoleAdmin()
+Middleware Auth ->> Chain of Responsibility : next()
+Chain of Responsibility ->> Middleware Validation : checkAdminJWT()
+Middleware Validation ->> Model : findUser()
+Model ->> Database : getConnessione()
+Database ->> Model : DatabaseSingleton.instance
+Model ->> Database : findUser()
+Database ->> Model : User
+Model ->> Middleware Validation : User
+Middleware Validation ->> Chain of Responsibility : next()
+Chain of Responsibility ->> Middleware Validation : checkRicaricaUtente()
+Middleware Validation ->> Proxy : validaDati()
+Proxy ->> Middleware Validation : Dati validati
+Middleware Validation ->> Model : validatorRicaricaUtent
+```
 
 ### delete Associazione
+
+```mermaid
+sequenceDiagram
+autonumber
+Client ->> App : /ricaricaUtente
+App ->> Chain of Responsibility : JWT
+Chain of Responsibility ->> Middleware Auth : checkHeader()
+Middleware Auth ->> Chain of Responsibility : next()
+Chain of Responsibility ->> Middleware Auth : checkToken()
+Middleware Auth ->> Chain of Responsibility : next()
+Chain of Responsibility ->> Middleware Auth : verifyAndAuthenticate()
+Middleware Auth ->> Chain of Responsibility : next()
+Chain of Responsibility ->> Middleware Auth : checkRoleAdmin()
+Middleware Auth ->> Chain of Responsibility : next()
+Chain of Responsibility ->> Middleware Validation : checkAdminJWT()
+Middleware Validation ->> Model : findUser()
+Model ->> Database : getConnessione()
+Database ->> Model : DatabaseSingleton.instance
+Model ->> Database : findUser()
+Database ->> Model : User
+Model ->> Middleware Validation : User
+Middleware Validation ->> Chain of Responsibility : next()
+
+```
