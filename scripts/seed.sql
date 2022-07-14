@@ -1,7 +1,7 @@
 CREATE DATABASE boat_db;
 \c boat_db
 CREATE EXTENSION IF NOT EXISTS postgis;
-CREATE TABLE imbarcazione (
+CREATE TABLE imbarcazioni (
   mmsi INT NOT NULL PRIMARY KEY,
   proprietario varchar(50) NOT NULL, 
   nome_imbarcazione varchar(50) NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE associazioni(
 	  REFERENCES geofences(nome_area),
     CONSTRAINT fk_mmsi_imbarcazione
       FOREIGN KEY(mmsi_imbarcazione) 
-	  REFERENCES imbarcazione(mmsi)
+	  REFERENCES imbarcazioni(mmsi)
   );
 
 CREATE TABLE segnalazioni(
@@ -72,7 +72,7 @@ CREATE TABLE dati_istantanei(
   mmsi INT NOT NULL,
    CONSTRAINT fk_mmsi
       FOREIGN KEY(mmsi) 
-	  REFERENCES imbarcazione(mmsi)
+	  REFERENCES imbarcazioni(mmsi)
   );
   
 
@@ -88,7 +88,7 @@ INSERT INTO users (username, credito, ruolo, mail)
   ('nic_mori', 1000, 'user','nic@mori.com'),
   ('admin', 0, 'admin','admin@admin.com');
 
-INSERT INTO imbarcazione (mmsi, proprietario, nome_imbarcazione, lunghezza,peso,stato) 
+INSERT INTO imbarcazioni (mmsi, proprietario, nome_imbarcazione, lunghezza,peso,stato) 
   VALUES 
   (123456789, 'mario_rossi', 'Pinta',20,100,'stazionaria'), 
   (123456798, 'luigi_bianchi', 'Nina',30,100,'stazionaria');

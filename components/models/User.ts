@@ -49,26 +49,23 @@ export async function findUser(username:string):Promise<any> {
     return result;
 };
 /**
- * Recupera il credito dell'utente che fa la richiesta e scala i 0.025 token necessari all'invio
+ * Scala i 0.025 token necessari all'invio dal credito dell'utente 
  * @param username username dell'utente da cercare
  * @returns  Ritorna il risultato della ricerca
  */
 export async function scalaCredito(username:string):Promise<any> {
-    let result:any;
     try{
-        result = await User.findByPk(username,{raw:true});
-        result.credito = result.credito - 0.025;
-        await User.update(result, {where: { username: username }})
+        await User.decrement('credito', { by: 0.025,where:{'username':username} })
     }catch(error){
-        result.log(error);
+        console.log(error);
     }
-    return result;
+    return;
 };
 
 /**
  * Controlla l'esistenza dell'utente collegato alla mail specificata nella richiesta 
  * @param mail contiene la mail di cui cercare l'utente collegato
- * @returns Ritorna true se la validazione è andata a buon fine, altrimenti l'errore relativo
+ * @returns Ritorna true se la ricerca è andata a buon fine, altrimenti l'errore relativo
  */
  export async function validatorRicaricaUtente(mail:any):Promise<any>{
     const checkutente = await findUserByMail(mail).then((utente) => { 

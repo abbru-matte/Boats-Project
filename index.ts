@@ -125,38 +125,8 @@ app.get('/getSegnalazioni', auth.checkRole,validator.checkAdminUserJWT,validator
        }
 });
 
-//Rotta not found per le richieste GET di rotte non esistenti
-app.get('*', function(req, res){
-       res.header("Content-Type", "application/json");
-       const response = new ResponseHttpBuilder();
-       let json = JSON.stringify(response.setStatusCode(404)
-                      .setStatus("Not found")
-                      .setMessage("Rotta non trovata")
-                      .build());
-       res.status(res.statusCode).send(json);
-});
-//Rotta not found per le richieste POST di rotte non esistenti
-app.post('*', function(req, res){
-       res.header("Content-Type", "application/json");
-       const response = new ResponseHttpBuilder();
-       let json = JSON.stringify(response.setStatusCode(404)
-                      .setStatus("Not found")
-                      .setMessage("Rotta non trovata")
-                      .build());
-       res.status(res.statusCode).send(json);
-});
-//Rotta not found per le richieste PUT di rotte non esistenti
-app.put('*', function(req, res){
-       res.header("Content-Type", "application/json");
-       const response = new ResponseHttpBuilder();
-       let json = JSON.stringify(response.setStatusCode(404)
-                      .setStatus("Not found")
-                      .setMessage("Rotta non trovata")
-                      .build());
-       res.status(res.statusCode).send(json);
-});
-//Rotta not found per le richieste DELETE di rotte non esistenti
-app.delete('*', function(req, res){
+//Rotta not found per le richieste HTTP di rotte non esistenti
+app.all('*', function(req, res){
        res.header("Content-Type", "application/json");
        const response = new ResponseHttpBuilder();
        let json = JSON.stringify(response.setStatusCode(404)

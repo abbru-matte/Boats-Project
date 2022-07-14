@@ -1,16 +1,6 @@
-
-export const validatorGetPosizioni = (dati:any):boolean => {
-    if (dati.dataFine != undefined){
-        return (Number.isInteger(dati.mmsi) && dati.mmsi>0 && dati.mmsi.toString().length == 9 &&
-        (dati.dataInizio instanceof Date && !isNaN(dati.dataInizio)) &&
-        (dati.dataFine instanceof Date && !isNaN(dati.dataFine)) &&
-        (dati.dataInizio.getTime() < dati.dataFine.getTime()) && 
-        dati.dataFine.getTime() <= Date.now())
-    } else {
-        return (Number.isInteger(dati.mmsi) && dati.mmsi>0 && dati.mmsi.toString().length == 9 &&
-        (dati.dataInizio instanceof Date && !isNaN(dati.dataInizio) && dati.dataInizio.getTime() <= Date.now()))
-    }
-};
+/**
+ * Funzione che ha il ruolo di handler del Proxy usato per la validazione dell'input
+ */
 export let validatorProxyHandler = {
     set(obj, prop, value) {
       switch(prop){
@@ -113,7 +103,7 @@ export let validatorProxyHandler = {
             throw new TypeError('Inserire un valore numerico per la velocità');
           }
           if (value <= 0 || value >=1000) {
-              throw new Error('La velocità deve essere maggiore di 0 e inferiore a 1000');
+              throw new RangeError('La velocità deve essere maggiore di 0 e inferiore a 1000');
           }
           break;
         case 'coordinate':
@@ -152,8 +142,31 @@ export let validatorProxyHandler = {
       return true;
     }
   };
+  /**
+   * Funzione per controllare che la stringa inserita rispetti il formato email
+   * @param email stringa da validare
+   * @returns True se il formato corrisponde a un'email, false altrimenti
+   */
 function validateEmail(email) 
     {
         var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return re.test(email);
     }
+
+    /**
+     * Funzione che verifica che i filtri temporali inseriti dall'utente siano validi
+     * @param dati filtri
+     * @returns True se la validazione va a buon fine, false altrimenti
+     */
+export const validatorGetPosizioni = (dati:any):boolean => {
+  if (dati.dataFine != undefined){
+      return (Number.isInteger(dati.mmsi) && dati.mmsi>0 && dati.mmsi.toString().length == 9 &&
+      (dati.dataInizio instanceof Date && !isNaN(dati.dataInizio)) &&
+      (dati.dataFine instanceof Date && !isNaN(dati.dataFine)) &&
+      (dati.dataInizio.getTime() < dati.dataFine.getTime()) && 
+      dati.dataFine.getTime() <= Date.now())
+  } else {
+      return (Number.isInteger(dati.mmsi) && dati.mmsi>0 && dati.mmsi.toString().length == 9 &&
+      (dati.dataInizio instanceof Date && !isNaN(dati.dataInizio) && dati.dataInizio.getTime() <= Date.now()))
+  }
+};

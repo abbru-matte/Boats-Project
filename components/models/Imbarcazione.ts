@@ -8,7 +8,7 @@ const sequelize: Sequelize = DatabaseSingleton.getInstance().getConnessione();
 /**
  *  Oggetto Imbarcazione per la tabella imbarcazioni del DB
  */
-export const Imbarcazione = sequelize.define('imbarcazione', 
+export const Imbarcazione = sequelize.define('imbarcazioni', 
 {
     mmsi: {
         type: DataTypes.INTEGER(),

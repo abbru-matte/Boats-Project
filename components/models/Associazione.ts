@@ -79,7 +79,7 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
  * Controlla l'esistenza della geofence e dell'imbarcazione 
  * specificate nella richiesta
  * @param associazione contiene i dati dell'associazione da validare
- * @returns Ritorna true se la validazione è andata a buon fine, altrimenti l'errore relativo
+ * @returns Ritorna true se la ricerca è andata a buon fine, altrimenti l'errore relativo
  */
  export async function validatorDeleteAssociazione(associazione:any):Promise<any>{
     const checkGeofence = await Geofences.findGeofence(associazione.nome_geofence).then((geofence) => { 
@@ -131,11 +131,9 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
     });
 }
 /**
- * Controlla l'esistenza dell'imbarcazione specificata nella richiesta 
- * e verifica che sia posseduta dall'utente che invia i dati
- * @param dati contiene i dati istantanei da validare
- * @param proprietario è l'utente che fa la richiesta
- * @returns Ritorna true se la validazione è andata a buon fine, altrimenti l'errore relativo
+ * Recupera le geofence specificate nelle associazioni
+ * @param associazioni contiene le associazioni
+ * @returns Ritorna le geofence
  */
  export async function getGeofences(associazioni):Promise<any>{
     let geofences = [];
@@ -170,8 +168,11 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
  * @returns Ritorna il risultato della ricerca
  */
  export async function checkPosizione(associazioni:any,geofences:any,datiIstantanei:any):Promise<any> {
+    //Contiene tutte le associazioni in cui l'imbarcazione è attualmente all'interno della geofence
     let associazioniAttive = associazioni.filter(associazione => associazione.inside === true);
+    //Contiene tutte le associazioni in cui l'imbarcazione è attualmente all'esterno della geofence
     let associazioniNonAttive = associazioni.filter(associazione => associazione.inside === false);
+    
     let uscito = {
         inside:false,
         ultima_uscita:Sequelize.literal('CURRENT_TIMESTAMP(3)')
@@ -187,14 +188,12 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
         ultima_violazione_velocità:Sequelize.literal('CURRENT_TIMESTAMP(3)'),
         violazioni_recenti:0
     }
-
     let eventi = [];
-   
+
     for(const associazione of associazioniAttive){
         let geo = geofences.filter(element => element.nome_area === associazione.nome_geofence);
         let check = d3.geoContains(geo[0].geometria,datiIstantanei.posizione.coordinates)
     
-
         //Se check è false si è usciti dalla geofence
         if (check == false){
             await Associazione.update(uscito, {where: { id_associazione: associazione.id_associazione }});
@@ -257,8 +256,7 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
             }
         }
     }
-    for(const associazione of associazioniNonAttive){
-        
+    for(const associazione of associazioniNonAttive){   
         let geo = geofences.filter(element => element.nome_area === associazione.nome_geofence)
         let check = d3.geoContains(geo[0].geometria,datiIstantanei.posizione.coordinates)
         //Se check è true si è entrati nella geofence
@@ -298,11 +296,9 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
                     }
                     await Segnalazione.create(segnalazione);
                 }
-            }
-            
+            }  
             eventi.push(data);
         }
-        
     }
     return eventi;
 };

@@ -4,7 +4,7 @@ import * as Users from "../models/User";
 import * as Geofences from "../models/Geofence";
 import * as Associazioni from "../models/Associazione";
 import * as DatiIstantanei from "../models/DatoIstantaneo";
-import * as typesValidator from "../utils/typesValidator"
+import * as validatorProxy from "../utils/validatorProxy"
 import * as EntrateUscite from "../models/EntrataUscita";
 import * as Segnalazioni from "../models/Segnalazione";
 const { Op } = require("sequelize");
@@ -119,6 +119,8 @@ export async function checkPostNewBoat (req:any,res:any,next:any){
                     res.status_code = 201;
                     res.status_message = "Created";
                     res.data = {"mmsi":imbarcazione.mmsi};
+                    let now = new Date().toLocaleString("it-IT", {timeZone: "Europe/Rome"})
+                    console.log(`${now}: L'imbarcazione ${imbarcazione.mmsi} è stata aggiunta con successo`)
                     next();
                 });
             }
@@ -151,11 +153,13 @@ export async function checkPostGeofence (req:any,res:any,next:any){
         
         errorResp = await Geofences.validatorBodyGeofence(dati);
         if(!(errorResp instanceof Error)){
-            await Geofences.Geofence.create(dati).then(async(geofences:any) =>{
+            await Geofences.Geofence.create(dati).then(async(geofence:any) =>{
                 res.message = "Geofence creata";
                 res.status_code = 201;
                 res.status_message = "Created";
-                res.data = {"nome_area":geofences.nome_area};
+                res.data = {"nome_area":geofence.nome_area};
+                let now = new Date().toLocaleString("it-IT", {timeZone: "Europe/Rome"})
+                console.log(`${now}: La geofence ${geofence.nome_area} è stata aggiunta con successo`)
                 next();
             });
         }
@@ -189,6 +193,9 @@ export async function checkPostGeofence (req:any,res:any,next:any){
                     res.data = {"id_associazione":associazione.id_associazione,
                                 "nome_geofence": associazione.nome_geofence, 
                                 "mmsi_imbarcazione": associazione.mmsi_imbarcazione};
+                    let now = new Date().toLocaleString("it-IT", {timeZone: "Europe/Rome"})
+                    console.log(`${now}: L'associazione tra la Geofence ${associazione.nome_geofence} `+ 
+                                `e l'imbarcazione ${associazione.mmsi_imbarcazione} è stata aggiunta con successo`)
                     next();
                 });
             }
@@ -221,6 +228,8 @@ export async function checkPostGeofence (req:any,res:any,next:any){
                 res.message = "Credito aggiornato";
                 res.status_code = 200;
                 res.status_message = "OK";
+                let now = new Date().toLocaleString("it-IT", {timeZone: "Europe/Rome"})
+                console.log(`${now}: Il credito dell'utente con mail ${dati.mail} è stato aggiornato a ${dati.credito} con successo`)
                 next();
             })           
                 
@@ -240,45 +249,46 @@ export async function checkPostGeofence (req:any,res:any,next:any){
  * @param next successivo
  */
  export async function checkPostInvioDati (req:any,res:any,next:any){
-    let errorResp:any;
+    let response:any;
     try{
         let datiIstantanei = validaDati(req.body);
-            errorResp = await Imbarcazioni.validatorBodyDatiIstantanei(req.body,req.username);
-            if(!(errorResp instanceof Error)){
+        response = await Imbarcazioni.validatorBodyDatiIstantanei(datiIstantanei,req.username);
+        if(!(response instanceof Error)){
 
-                datiIstantanei.posizione = {};
-                datiIstantanei.posizione.type = "Point";
-                datiIstantanei.posizione.coordinates = [datiIstantanei.longitudine,datiIstantanei.latitudine];
-                delete datiIstantanei['latitudine'];
-                delete datiIstantanei['longitudine'];
+            datiIstantanei.posizione = {};
+            datiIstantanei.posizione.type = "Point";
+            datiIstantanei.posizione.coordinates = [datiIstantanei.longitudine,datiIstantanei.latitudine];
+            delete datiIstantanei['latitudine'];
+            delete datiIstantanei['longitudine'];
 
-                let dati:any = await DatiIstantanei.DatoIstantaneo.create(datiIstantanei);
-                await Users.scalaCredito(req.username);
-                await Associazioni.findAllAssociazioni(datiIstantanei.mmsi).then(async (associazioni)=>{
-                    if (associazioni){
-                       
-                        let geofences = await Associazioni.getGeofences(associazioni);
-                    
-                        await Associazioni.checkPosizione(associazioni,geofences,datiIstantanei).then(async(eventi:any) =>{
-                            for(const evento of eventi){
-                                await EntrateUscite.EntrataUscita.create(evento);
-                            }
-                            dati.velocità = Number(dati.velocità)
-                            res.message = "Dati inviati";
-                            res.status_code = 201;
-                            res.status_message = "Created";
-                            res.data = {dati};
-                            next();
-                        })
-                    }    
-                });            
-    }
+            let dati:any = await DatiIstantanei.DatoIstantaneo.create(datiIstantanei);
+            await Users.scalaCredito(req.username);
+            await Associazioni.findAllAssociazioni(datiIstantanei.mmsi).then(async (associazioni)=>{
+                if (associazioni){
+                    let geofences = await Associazioni.getGeofences(associazioni);
+                
+                    await Associazioni.checkPosizione(associazioni,geofences,datiIstantanei).then(async(eventi:any) =>{
+                        for(const evento of eventi){
+                            await EntrateUscite.EntrataUscita.create(evento);
+                        }
+                        dati.velocità = Number(dati.velocità)
+                        res.message = "Dati inviati";
+                        res.status_code = 201;
+                        res.status_message = "Created";
+                        res.data = {dati};
+                        let now = new Date().toLocaleString("it-IT", {timeZone: "Europe/Rome"})
+                        console.log(`${now}: I dati dell'imbarcazione ${datiIstantanei.mmsi} sono stati inviati con successo`)
+                        next();
+                    })
+                }    
+            });            
+        }
     }catch(error){
         res.status_code = 400;
         res.status_message = "Bad Request";
         next(error)
     }
-    next(errorResp);
+    next(response);
 };
 /**
  * Funzione che controlla e valida i dati inseriti per la rimozione di un'associazione esistente
@@ -289,24 +299,24 @@ export async function checkPostGeofence (req:any,res:any,next:any){
  export async function checkDeleteAssociazione (req:any,res:any,next:any){
     let response:any;
     try{
-        if(!typesValidator.validatorDatiAssociazione(req.body)){
-            response = new Error("Inserire i dati del payload della richiesta in un formato valido")
-            res.status_code = 400;
-            res.status_message = "Bad Request";
+        let dati = validaDati(req.body);
+        response = await Associazioni.validatorDeleteAssociazione(dati);
+        if(!(response instanceof Error)){
+            await Associazioni.Associazione.destroy({ where: { id_associazione: response } }).then(() =>{
+                res.message = "Associazione rimossa";
+                res.status_code = 200;
+                res.status_message = "OK";
+                
+                let now = new Date().toLocaleString("it-IT", {timeZone: "Europe/Rome"})
+                console.log(`${now}: L'associazione tra la Geofence ${dati.nome_geofence} `+ 
+                            `e l'imbarcazione ${dati.mmsi_imbarcazione} è stata rimossa con successo`)
+                res.data = {"id_associazione":response};
+                next();
+            });
         }
-        else{
-            response = await Associazioni.validatorDeleteAssociazione(req.body);
-            if(!(response instanceof Error)){
-                await Associazioni.Associazione.destroy({ where: { id_associazione: response } }).then(() =>{
-                    res.message = "Associazione rimossa";
-                    res.status_code = 200;
-                    res.status_message = "OK";
-                    res.data = {"id_associazione":response};
-                    next();
-                });
-            }
-        } 
     }catch(error){
+        res.status_code = 400;
+        res.status_message = "Bad Request";
         next(error)
     }
     next(response);
@@ -318,7 +328,6 @@ export async function checkPostGeofence (req:any,res:any,next:any){
  * @param next successivo
  */
 export async function getAllImbarcazioni(req:any,res:any,next:any) {
-    let errorResp:any;
     try{
             await Imbarcazioni.Imbarcazione.findAll().then((imbarcazioni:any) =>{
             for(const imbarcazione of imbarcazioni){
@@ -330,10 +339,7 @@ export async function getAllImbarcazioni(req:any,res:any,next:any) {
             res.status_message = "OK";
             res.data = {"Elenco_imbarcazioni": imbarcazioni};
             next();
-            });
-        
-        if(errorResp instanceof Error)
-            next(errorResp) 
+            }); 
     }catch(error){
         next(error)
     }
@@ -345,7 +351,6 @@ export async function getAllImbarcazioni(req:any,res:any,next:any) {
  * @param next successivo
  */
 export async function getAllUsers(req:any,res:any,next:any) {
-    let errorResp:any;
     try{
             await Users.User.findAll().then((users:any) =>{
             res.message = "Richiesta avvenuta con successo";
@@ -354,9 +359,6 @@ export async function getAllUsers(req:any,res:any,next:any) {
             res.data = {"Elenco_users": users};
             next();
             });
-        
-        if(errorResp instanceof Error)
-            next(errorResp) 
     }catch(error){
         next(error)
     }
@@ -368,7 +370,6 @@ export async function getAllUsers(req:any,res:any,next:any) {
  * @param next successivo
  */
 export async function getAllGeofences(req:any,res:any,next:any) {
-    let errorResp:any;
     try{
             await Geofences.Geofence.findAll().then((geofences:any) =>{
             res.message = "Richiesta avvenuta con successo";
@@ -377,9 +378,6 @@ export async function getAllGeofences(req:any,res:any,next:any) {
             res.data = {"Elenco_geofences": geofences};
             next();
             });
-        
-        if(errorResp instanceof Error)
-            next(errorResp) 
     }catch(error){
         next(error)
     }
@@ -391,7 +389,6 @@ export async function getAllGeofences(req:any,res:any,next:any) {
  * @param next successivo
  */
  export async function getAllAssociazioni(req:any,res:any,next:any) {
-    let errorResp:any;
     try{
             await Associazioni.Associazione.findAll().then((associazioni:any) =>{
             res.message = "Richiesta avvenuta con successo";
@@ -400,32 +397,26 @@ export async function getAllGeofences(req:any,res:any,next:any) {
             res.data = {"Elenco_associazioni": associazioni};
             next();
             });
-        
-        if(errorResp instanceof Error)
-            next(errorResp) 
     }catch(error){
         next(error)
     }
 };
 /**
- * Funzione che restituisce tutte le associazioni presenti nel DB
+ * Funzione che restituisce tutte le entrate e le uscite registrate presenti nel DB
  * @param req richiesta
  * @param res risposta
  * @param next successivo
  */
  export async function getEntrateUscite(req:any,res:any,next:any) {
-    let errorResp:any;
     try{
-            await EntrateUscite.EntrataUscita.findAll({attributes:['id_evento','evento','data_evento','mmsi','nome_geofence']}).then((eventi:any) =>{
+            await EntrateUscite.EntrataUscita.findAll({attributes:['id_evento','evento','data_evento','mmsi','nome_geofence']})
+            .then((eventi:any) =>{
             res.message = "Richiesta avvenuta con successo";
             res.status_code = 200;
             res.status_message = "OK";
             res.data = {"Elenco_entrate_uscite": eventi};
             next();
             });
-        
-        if(errorResp instanceof Error)
-            next(errorResp) 
     }catch(error){
         next(error)
     }
@@ -457,7 +448,6 @@ export async function getAllGeofences(req:any,res:any,next:any) {
  * @param next successivo
  */
  export async function getStatoImbarcazioniUser(req:any,res:any,next:any) {
- 
     let listaImbarcazioni: string[] = [];
     try{
         await Imbarcazioni.Imbarcazione.findAll({where:{proprietario:req.username},attributes:['mmsi']}).then((listaMmsi:any) =>{
@@ -484,7 +474,6 @@ export async function getAllGeofences(req:any,res:any,next:any) {
  * @param next successivo
  */
  export async function getAssociazioniUser(req:any,res:any,next:any) {
-    let errorResp:any;
     let listaImbarcazioni: string[] = [];
     try{
         await Imbarcazioni.Imbarcazione.findAll({where:{proprietario:req.username},attributes:['mmsi']}).then((listaMmsi:any) =>{
@@ -499,8 +488,6 @@ export async function getAllGeofences(req:any,res:any,next:any) {
                 next();
                 });
             });  
-        if(errorResp instanceof Error)
-            next(errorResp) 
     }catch(error){
         next(error)
     }
@@ -512,7 +499,7 @@ export async function getAllGeofences(req:any,res:any,next:any) {
  * @param next successivo
  */
  export async function getPosizioni (req:any,res:any,next:any){
-    let errorResp:any;
+    let response:any;
     try{
         req.params.dataInizio = new Date(req.params.dataInizio);
         req.params.mmsi = Number(req.params.mmsi);
@@ -520,14 +507,14 @@ export async function getAllGeofences(req:any,res:any,next:any) {
         if (req.params.dataFine != undefined){
             req.params.dataFine = new Date(req.params.dataFine)
         }
-        if(!typesValidator.validatorGetPosizioni(req.params)){
-            errorResp = new Error("Inserire i dati della richiesta in un formato valido")
+        if(!validatorProxy.validatorGetPosizioni(req.params)){
+            response = new Error("Inserire i dati della richiesta in un formato valido")
             res.status_code = 400;
             res.status_message = "Bad Request";
         }
         else{   
-            errorResp = await Imbarcazioni.validatorMmsiPosizione(req.params);
-            if(!(errorResp instanceof Error)){
+            response = await Imbarcazioni.validatorMmsiPosizione(req.params);
+            if(!(response instanceof Error)){
                 await DatiIstantanei.getPosizioniFiltrate(req.params).then((dati:any) =>{
                     for (const dato of dati){
                         dato.velocità = Number(dato.velocità);
@@ -536,8 +523,7 @@ export async function getAllGeofences(req:any,res:any,next:any) {
                     res.status_code = 200;
                     res.status_message = "OK";
                     res.data = {"Elenco_posizioni_imbarcazione": dati};
-                    next();
-                    
+                    next();         
                 });
             }
             
@@ -545,7 +531,7 @@ export async function getAllGeofences(req:any,res:any,next:any) {
     }catch(error){
         next(error)
     }
-    next(errorResp);
+    next(response);
 };
 /**
  * Funzione che restituisce il credito dell'utente che fa la richiesta
@@ -554,7 +540,6 @@ export async function getAllGeofences(req:any,res:any,next:any) {
  * @param next successivo
  */
  export async function getCredito(req:any,res:any,next:any) {
- 
     try{
         await Users.User.findByPk(req.username,{attributes:['credito']}).then((credito:any) =>{
                 res.message = "Richiesta avvenuta con successo";
@@ -587,8 +572,13 @@ export async function getAllGeofences(req:any,res:any,next:any) {
         next(error)
     }
 };
+/**
+ * Funzione che usa un Proxy per validare i parametri inseriti dall'utente in POST
+ * @param body contiene il body della richiesta POST da validare
+ * @returns 
+ */
 function validaDati(body:any){
-    let dati = new Proxy({}, typesValidator.validatorProxyHandler);
+    let dati = new Proxy({}, validatorProxy.validatorProxyHandler);
     for (const key of Object.keys(body)){
         dati[key] = body[key];
     }
