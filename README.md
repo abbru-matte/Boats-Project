@@ -93,7 +93,7 @@ Di seguito l'elenco delle rotte. Qualsiasi rotta non implementata restituisce l'
         </tr>
         <tr>
          <td> GET </td>
-         <td> /getASsociazioni </td>
+         <td> /getAssociazioni </td>
          <td> User </td>
         </tr>
         <tr>
@@ -146,6 +146,26 @@ Di seguito un esempio di body della richiesta valido:
     "nome_imbarcazione": "Nina",
     "lunghezza": 20,
     "peso": 1000
+}
+~~~
+#### Inserimento di una nuova Geofence (/creaGeofence)
+Questa rotta permette di inserire una nuova Geofence Area.
+
+I dati della Geofence devono essere inseriti nel body della richiesta in formato JSON con la seguente struttura:
+
+* "nome_area": Identificativo univoco della Geofence.
+* "coordinate": Coordinate della geofence in formato [longitudine,latitudine]. Devono costituire un poligono chiuso. Per questo motivo, la prima coppia di coordinate deve essere uguale all'ultima e devono essere inserite almeno 4 coppie. Il tutto deve essere racchiuso tra parentesi quadre, per rispettare il formato GeoJSON. Nell'inserimento delle coordinate va seguito il verso orario.
+* "vel_max": Parametro opzionale che, se specificato, imposta il limite di velocità all'interno della nuova Geofence.
+
+Di seguito un esempio di body della richiesta valido:
+~~~
+{
+    "nome_area": "Magnolia",
+    "coordinate": [
+                    [ [90.0, 0.0], [90.0, 20.0], [120.0, 20.0],
+                    [120.0, 0.0], [90.0, 0.0] ]
+                ],
+    "vel_max": 50
 }
 ~~~
 ## Diagrammi UML
