@@ -168,6 +168,53 @@ Di seguito un esempio di body della richiesta valido:
     "vel_max": 50
 }
 ~~~
+#### Inserimento di una nuova Associazione (/creaAssociazione)
+Questa rotta, di tipo POST, permette di inserire una nuova Associazione tra una Geofence e un'imbarcazione.
+
+I dati della nuova Associazione devono essere inseriti nel body della richiesta in formato JSON con la seguente struttura:
+
+* "nome_geofence": Identificativo univoco della Geofence. Deve esistere nel Database
+* "mmsi_imbarcazione": mmsi: Identificativo univoco dell'imbarcazione. È costituito da 9 cifre. Deve esistere nel Database
+
+Di seguito un esempio di body della richiesta valido:
+~~~
+{
+    "nome_geofence": "Gotham",
+    "mmsi_imbarcazione": 123456798
+}
+~~~
+#### Ricarica di un utente (/ricaricaUtente)
+Questa rotta, di tipo PUT, permette di ricaricare e impostare il nuovo credito di un utente identificato tramite mail.
+
+I dati della ricarica devono essere inseriti nel body della richiesta in formato JSON con la seguente struttura:
+
+* "mail": Mail dell'utente a cui ricaricare il credito. Deve corrispondere a un utente esistente.
+* "credito": mmsi: Identificativo univoco dell'imbarcazione. È costituito da 9 cifre. Deve esistere nel Database
+
+Di seguito un esempio di body della richiesta valido:
+~~~
+{
+    "mail": "mario@rossi.com",
+    "credito": 1100
+}
+~~~
+#### Rimozione di un'associazione(/deleteAssociazione)
+Questa rotta, di tipo DELETE, permette di rimuovere un'associazione esistente tra una imbarcazione e una geofence.
+
+I dati della ricarica devono essere inseriti nel body della richiesta in formato JSON con la seguente struttura:
+
+* "nome_geofence": Identificativo univoco della Geofence. Deve esistere nel Database
+* "mmsi_imbarcazione": mmsi: Identificativo univoco dell'imbarcazione. È costituito da 9 cifre. Deve esistere nel Database
+
+Di seguito un esempio di body della richiesta valido:
+~~~
+{
+    "nome_geofence": "Gotham",
+    "mmsi_imbarcazione": 123456789
+}
+~~~
+#### Visualizzazione di tutte le imbarcazioni(/getAllImbarcazioni)
+Questa rotta, di tipo GET, permette di visualizzare i metadati di tutte le imbarcazioni presenti nel Database.
 ## Diagrammi UML
 
 ### Diagramma dei casi d'uso
