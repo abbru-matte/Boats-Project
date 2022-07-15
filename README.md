@@ -194,6 +194,7 @@ Di seguito un esempio di rotta valida:
 ### Rotte Admin/User
 #### Visualizzazione di tutte le segnalazioni (/getSegnalazioni)
 Rotta di tipo GET che permette di visualizzare tutte le segnalazioni registrate con il relativo stato (in corso o rientrata).
+Per questa rotta c'è bisogno di utilizzare un JWT che abbia specificato come ruolo 'admin' oppure 'user'.
 
 ### Rotte User
  Per avere l'autorizzazione a chiamare le rotte user, c'è bisogno di utilizzare un JWT che abbia specificato come ruolo 'user'.
