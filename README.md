@@ -205,8 +205,8 @@ Questa rotta permette di inviare i dati istantanei relativi ad una imbarcazione.
 I dati istantanei devono essere inseriti nel body della richiesta in formato JSON con la seguente struttura:
 
 * "mmsi": Identificativo univoco dell'imbarcazione. È costituito da 9 cifre. Deve corrispondere ad una imbarcazione posseduta dall'utente che invia i dati.
-* "longitudine": Valore in gradi decimali(DD) della longitudine della posizione inviata. Deve essere compreso tra -180° e 180°.
-* "latitudine": Valore in gradi decimali(DD) della latitudine della posizione inviata. Deve essere compreso tra -90 e 90°.
+* "longitudine": Valore in gradi decimali (DD) della longitudine della posizione inviata. Deve essere compreso tra -180° e 180°.
+* "latitudine": Valore in gradi decimali (DD) della latitudine della posizione inviata. Deve essere compreso tra -90 e 90°.
 * "stato": Stato dell'imbarcazione al momento dell'invio dei dati istantanei. Può essere uno tra "in navigazione", "in pesca" o "stazionaria".
 * "velocità": Velocità in km/h dell'imbarcazione al momento dell'invio dei dati istntanei.
 
