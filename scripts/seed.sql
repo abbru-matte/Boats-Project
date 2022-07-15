@@ -57,12 +57,8 @@ CREATE TABLE entrate_uscite(
   data_evento timestamp NOT NULL,
   id_associazione INT NOT NULL,
   mmsi INT NOT NULL,
-  nome_geofence varchar(50) NOT NULL,
-   CONSTRAINT fk_id_associazione
-      FOREIGN KEY(id_associazione) 
-	  REFERENCES associazioni(id_associazione)
+  nome_geofence varchar(50) NOT NULL
   );
-
 CREATE TABLE dati_istantanei(
   id_invio SERIAL PRIMARY KEY,
   posizione geometry,

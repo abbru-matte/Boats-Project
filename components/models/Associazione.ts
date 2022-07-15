@@ -203,11 +203,11 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
                 mmsi:associazione.mmsi_imbarcazione,
                 nome_geofence:associazione.nome_geofence
             }
-            
+            let now = new Date().toLocaleString("it-IT", {timeZone: "Europe/Rome"})
+            console.log(`${now}: L'imbarcazione con mmsi ${associazione.mmsi_imbarcazione} è uscita dalla Geofence ${associazione.nome_geofence}`)
             let updated:any = await Associazione.findOne({where:{ id_associazione: associazione.id_associazione }})
             let tempo = updated.ultima_uscita.getTime();
                 const timeout = setTimeout(async () => {
-                    console.log("Finito il tempo")
                     await Associazione.findOne({where:{"id_associazione": updated.id_associazione} }).then(async(associazione:any)=>{
                         if (associazione != null){
                             if (associazione.inside == false && (associazione.ultima_uscita.getTime() == tempo)){
@@ -217,7 +217,6 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
                                         stato: "RIENTRATA",
                                         data_fine: Sequelize.literal('CURRENT_TIMESTAMP(3)')
                                     }
-                                    console.log("Sto aggiornando la segnalazione")
                                     Segnalazione.update(segnalazione,{where:{"id_segnalazione": result.id_segnalazione} });
                                 }
                                 Associazione.update({violazioni_recenti: 0},{where:{"id_associazione": updated.id_associazione} })
@@ -284,6 +283,8 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
                 mmsi:associazione.mmsi_imbarcazione,
                 nome_geofence:associazione.nome_geofence
             }
+            let now = new Date().toLocaleString("it-IT", {timeZone: "Europe/Rome"})
+            console.log(`${now}: L'imbarcazione con mmsi ${associazione.mmsi_imbarcazione} è entrata nella Geofence ${associazione.nome_geofence}`)
             if (entrato.violazioni_recenti > 5){
                 let exists = await Segnalazione.findOne({where:{'stato':'IN CORSO','id_associazione':associazione.id_associazione}});
                 if (exists == null){
@@ -295,6 +296,7 @@ export async function validatorBodyAssociazione(associazione:any):Promise<any>{
                         nome_geofence: associazione.nome_geofence
                     }
                     await Segnalazione.create(segnalazione);
+                    console.log(`${now}: È partita una segnalazione per l'imbarcazione con mmsi ${associazione.mmsi_imbarcazione} relativa alla Geofence ${associazione.nome_geofence}`)
                 }
             }  
             eventi.push(data);

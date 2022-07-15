@@ -27,6 +27,9 @@ export const EntrataUscita = sequelize.define('entrate_uscite', {
     },
     nome_geofence:{
         type: DataTypes.STRING()
+    },
+    id_associazione:{
+        type: DataTypes.INTEGER()
     }
 }, 
 {
@@ -35,7 +38,5 @@ export const EntrataUscita = sequelize.define('entrate_uscite', {
     freezeTableName: true
 });
 
-EntrataUscita.belongsTo(Associazioni.Associazione,{
-    foreignKey: "id_associazione"
-  });
+
 

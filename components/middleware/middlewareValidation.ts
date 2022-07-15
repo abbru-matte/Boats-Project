@@ -148,6 +148,7 @@ export async function checkPostGeofence (req:any,res:any,next:any){
             throw new Error("Inserire nella richiesta tutti i campi necessari")
         }
         dati.geometria = {};
+        dati.coordinate[0] = dati.coordinate[0].map( sub => sub.map( subSub => subSub.toFixed(6)));
         dati.geometria.coordinates = dati.coordinate
         dati.geometria.type = "Polygon";
         
