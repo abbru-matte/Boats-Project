@@ -1,8 +1,25 @@
-# Boats-Project
+# Boats Project
 ## Descrizione del progetto
-La seguente repository, Boats Project, contiene il progetto realizzato da Abbruzzetti Matteo e Pallini Daniele per l'esame di Programmazione Avanzata del corso di Laurea magistrale di Ingegneria Informatica e dell'Automazione (A.A. 2021/2022).
+L'obiettivo è quello di realizzare un servizio di back-end che definisca delle aree geografiche marittime, denominate Geofence, in cui ogni ingresso e ogni uscita di imbarcazioni deve essere registrato. Ad ogni Geofence possono essere associate delle imbarcazioni, identificate tramite un mmsi (codice identificativo univoco). L'associazione è quella che abilita la memorizzazione degli eventi di entrata e uscita relativi all'imbarcazione e alla Geofence collegate dall'associazione stessa. Un ingresso in una geofence comporta un incremento unitario del numero di violazioni (se è passata più di un'ora dall'ultimo ingresso registrato nella stessa Geofence). Se il numero supera le 5 violazioni in un intervallo temporale di 48 ore, viene generata una segnalazione con stato "in corso" per quella associazione. La segnalazione rientra se, nelle successive 48 ore dall'ultima uscita dalla Geofence, non si commettono ulteriori violazioni di ingresso della geofence stessa. Il numero di violazioni aumenta anche se si supera il limite di velocità all'interno di una Geofence in cui questo limite è presente.
 
-L'obiettivo di Boats Project è quello di realizzare un servizio di back-end che sia in grado di gestire un programma che possa controllare le imbarcazioni degli utenti in diverse aree geografiche, denominate Geofences.
+Sono stati previsti due ruoli distinti, ognuno con funzionalità dedicate.
+#### Ruolo "admin"
+Corrisponde all'amministratore di sistema. Può:
+* Inserire nuove Geofence, nuove imbarcazioni, aggiungere e rimuovere associazioni.
+* Visualizzare tutte le imbarcazioni, Geofences e associazioni registrate. 
+* Visualizzare tutte le entrate e uscite registrate per tutte le associazioni.
+* Visualizzare l'elenco di tutte le segnalazioni registrate(in corso e rientrate)
+* Visualizzare tutte le posizioni di una determinata imbarcazione in uno specifico intervallo temporale 
+* Visualizzare lo stato di tutte le imbarcazioni associate ad una determinata Geofence (con relativo tempo di permanenza in minuti per quelle all'interno). 
+* Ricaricare il credito di un utente.
+
+#### Ruolo "user"
+Corrisponde all'utente proprietario di imbarcazioni. Può:
+* Inviare i dati istantanei di una imbarcazione da lui posseduta (l'invio ha un costo di 0,025 token). 
+* Visualizzare tutte le associazioni per le proprie imbarcazioni. 
+* Visualizzare lo stato di tutte le proprie imbarcazioni associate a una determinata Geofence (con relativo tempo di permanenza in minuti per quelle all'interno) 
+* Visualizzare l'elenco di tutte le segnalazioni registrare(in corso e rientrate)
+* Visualizzare il proprio credito residuo.
 ## Rotte
 Di seguito l'elenco delle rotte. Qualsiasi rotta non implementata restituisce l'error 404 NOT FOUND
 
@@ -21,7 +38,7 @@ Di seguito l'elenco delle rotte. Qualsiasi rotta non implementata restituisce l'
 |GET|[/getEntrateUscite](#visualizzazione-di-tutte-le-entrate-e-uscite-getentrateuscite)|Admin|
 |GET|[/getStatoImbarcazioni/:geofence](#visualizzazione-dello-stato-di-tutte-le-imbarcazioni-associate-a-una-geofence-getstatoimbarcazionigeofence)|Admin|
 |GET|[/getPosizioni/:mmsi/:dataInizio/:dataFine ](#visualizzazione-delle-posizioni-di-una-imbarcazione-in-un-intervallo-temporale-getposizionimmsidatainiziodatafine)|Admin|
-|GET|[/getSegnalazioni](#visualizzazione-di-tutte-le-segnalazioni-getsegnalazioni)|Admin|
+|GET|[/getSegnalazioni](#visualizzazione-di-tutte-le-segnalazioni-getsegnalazioni)|Admin/User|
 |GET|[/getStatoImbarcazioniUser/:geofence ](#visualizzazione-dello-stato-di-tutte-le-imbarcazioni-di-un-utente-associate-a-una-geofence-getstatoimbarcazioniusergeofence)|User|
 |GET|[/getAssociazioni](#visualizzazione-di-tutte-le-associazioni-di-imbarcazioni-possedute-da-un-utente-getassociazioni)|User|
 |GET|[/getCredito](#visualizzazione-del-credito-di-un-utente-getcredito)|User|
@@ -174,9 +191,9 @@ Di seguito un esempio di rotta valida:
 ~~~
 /getPosizioni/123456789/2022-07-01/2022-07-14
 ~~~
-
+### Rotte Admin/User
 #### Visualizzazione di tutte le segnalazioni (/getSegnalazioni)
-Rotta di tipo GET che permette di visualizzare tutte le segnalazioni partite con il relativo stato (in corso o rientrata).
+Rotta di tipo GET che permette di visualizzare tutte le segnalazioni registrate con il relativo stato (in corso o rientrata).
 
 ### Rotte User
  Per avere l'autorizzazione a chiamare le rotte user, c'è bisogno di utilizzare un JWT che abbia specificato come ruolo 'user'.
@@ -222,8 +239,8 @@ Rotta di tipo GET che permette di visualizzare il proprio credito.
 ### Diagramma dei casi d'uso
 
 ### Diagrammi delle sequenze
-
-### get All Imbarcazioni
+Di seguito vengono riportati i diagrammi delle sequenze di alcune delle operazioni più interessanti, uno per tipo di richiesta HTTP.
+#### GET All Imbarcazioni
 
 ```mermaid
 sequenceDiagram
@@ -257,7 +274,7 @@ App ->> ResponseHTTP : successResponseGET(response)
 ResponseHTTP ->> Client : res.send(JSONresponse)
 ```
 
-### post Invio Dati Istantanei
+#### POST Invio Dati Istantanei
 
 ```mermaid
 sequenceDiagram
@@ -324,7 +341,7 @@ App ->> ResponseHTTP : successResponsePOST(response)
 ResponseHTTP ->> Client : res.send(JSONresponse)
 ```
 
-### put Ricarica Utente
+#### PUT Ricarica Utente
 
 ```mermaid
 sequenceDiagram
@@ -364,7 +381,7 @@ App ->> ResponseHTTP : successResponse(response)
 ResponseHTTP ->> Client : res.send(JSONresponse)
 ```
 
-### delete Associazione
+#### DELETE Associazione
 
 ```mermaid
 sequenceDiagram
