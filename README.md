@@ -42,7 +42,7 @@ Per quanto riguarda il ruolo "user", un JWT valido sarà del tipo:
     "ruolo":"user"
 }
 ~~~
- ### Rotte Admin
+  ### Rotte Admin
  Per avere l'autorizzazione a chiamare le rotte admin, c'è bisogno di utilizzare un JWT che abbia specificato come ruolo 'admin'.
  Di seguito verranno descritte in dettaglio tutte le rotte previste per questo ruolo. Verrà dato per scontato il fatto di aver inserito nella richiesta un JWT valido.
  
@@ -140,35 +140,78 @@ Di seguito un esempio di body della richiesta valido:
 #### Visualizzazione di tutte le imbarcazioni (/getAllImbarcazioni)
 Questa rotta, di tipo GET, permette di visualizzare i metadati di tutte le imbarcazioni presenti nel Database.
 
-### Visualizzazione di tutte le Geofences (/getAllGeofences)
-Rotta di tipo GET che permette ad un utente di ruolo admin di visualizzare tutte le geofences presenti nel Database.
+#### Visualizzazione di tutte le Geofences (/getAllGeofences)
+Rotta di tipo GET che permette di visualizzare i metadati di tutte le geofences presenti nel Database.
 
-### Visualizzazione di tutti gli utenti (/getAllUsers)
-Rotta di tipo GET che permette ad un utente di ruolo admin di visualizzare tutti gli utenti presenti nel Database con i loro usernames, ruoli, mail e crediti.
+#### Visualizzazione di tutti gli utenti (/getAllUsers)
+Rotta di tipo GET che permette di visualizzare tutti gli utenti presenti nel Database con i loro usernames, ruoli, mail e crediti.
 
-### Visualizzazione di tutte le associazioni (/getAllAssociazioni)
-Rotta di tipo GET che permette ad un utente di ruolo admin di visualizzare tutti le associazioni di imbarcazioni e Geofences presenti nel Database.
+#### Visualizzazione di tutte le associazioni (/getAllAssociazioni)
+Rotta di tipo GET che permette di visualizzare tutti le associazioni tra imbarcazioni e Geofences presenti nel Database.
 
-### Visualizzazione di tutte le entrate e uscite (/getAllEntrateUscite)
-Rotta di tipo GET che permette ad un utente di ruolo admin di visualizzare tutti gli eventi di entrata e uscita di ogni associazione registrati nel Database attraverso l'invio di dati istantanei degli utenti.
+#### Visualizzazione di tutte le entrate e uscite (/getAllEntrateUscite)
+Rotta di tipo GET che permette di visualizzare tutti gli eventi di entrata e uscita di ogni associazione registrati nel Database attraverso l'invio di dati istantanei degli utenti.
 
-### Visualizzazione dello stato di tutte le imbarcazioni associate a una Geofence (/getStatoImbarcazioni/:geofence)
-Rotta di tipo GET che permette ad un utente di ruolo admin di visualizzare lo stato  di tutte le imbarcazioni in una Geofence prestabilita. Si deve inserire come parametro il nome della Geofence. Un esempio di rotta valida è: /getStatoImbarcazioni/gotham
+#### Visualizzazione dello stato di tutte le imbarcazioni associate a una Geofence (/getStatoImbarcazioni/:geofence)
+Rotta di tipo GET che permette di visualizzare lo stato  di tutte le imbarcazioni in una Geofence prestabilita. Si deve inserire come parametro il nome della Geofence. Un esempio di rotta valida è:
+~~~
+/getStatoImbarcazioni/Gotham
+~~~
 
-### Visualizzazione delle posizioni di una imbarcazione in un intervallo temporale (/getPosizioni/:mmsi/:dataInizio/:dataFine)
-Rotta di tipo GET che permette ad un utente di ruolo admin di visualizzare la posizione di una imbarcazione in un determinato intervallo temporale. I parametri da inserire nella rotta sono il codice mmsi dell'imbarcazione, la data d'inizio e la data di fine dell'intervallo. Un esempio di rotta valida è: /getPosizioni/123456789/2022-07-01/2022-07-10
+#### Visualizzazione delle posizioni di una imbarcazione in un intervallo temporale (/getPosizioni/:mmsi/:dataInizio/:dataFine)
+Rotta di tipo GET che permette di visualizzare la posizione di una imbarcazione in un determinato intervallo temporale. I parametri da inserire nella rotta sono: 
+*mmsi imbarcazione: Identificativo univoco dell'imbarcazione di cui visualizzare le posizioni. È costituito da 9 cifre.
+*data di inizio: Data di inizio dell'intervallo temporale da considerare.
+*data di fine. Data di inizio dell'intervallo temporale da considerare. Se non specificata, verranno filtrate le posizioni fino alla data corrente.
 
-### Visualizzazione (/getSegnalazioni)
-Rotta di tipo GET che permette ad un utente di ruolo admin di visualizzare tutte le segnalazioni partite con il relativo stato (in corso o rientrata).
+ Per le date, il formato accettato è YYYY-MM-DD.
 
-### Visualizzazione (/getStatoImbarcazioniUser/:geofence)
-Rotta di tipo GET che permette ad un utente di ruolo user di visualizzare se le proprie imbarcazioni si trovino all'interno o all'esterno di una Geofence e, per le imbarcazioni che si trovano all'interno, il tempo di permanenza in essa. Si deve inserire come parametro il nome della Geofence. Un esempio di rotta valida è: /getStatoImbarcazioniUser/gotham
+Di seguito un esempio di rotta valida:
+~~~
+/getPosizioni/123456789/2022-07-01/2022-07-14
+~~~
 
-### Visualizzazione (/getAssociazioni)
-Rotta di tipo GET che permette ad un utente di ruolo user di visualizzare l'elenco delle associazioni tra le proprie imbarcazioni e le Geofences a loro associate.
+#### Visualizzazione di tutte le segnalazioni(/getSegnalazioni)
+Rotta di tipo GET che permette di visualizzare tutte le segnalazioni partite con il relativo stato (in corso o rientrata).
 
-### Visualizzazione (/getCredito)
-Rotta di tipo GET che permette ad un utente di ruolo user di visualizzare il proprio credito.
+### Rotte User
+ Per avere l'autorizzazione a chiamare le rotte user, c'è bisogno di utilizzare un JWT che abbia specificato come ruolo 'user'.
+ Di seguito verranno descritte in dettaglio tutte le rotte previste per questo ruolo. Verrà dato per scontato il fatto di aver inserito nella richiesta un JWT valido.
+#### Invio di dati istantanei (/inviaDati)
+Questa rotta permette di inviare i dati istantanei relativi ad una imbarcazione.
+
+I dati istantanei devono essere inseriti nel body della richiesta in formato JSON con la seguente struttura:
+
+* "mmsi": Identificativo univoco dell'imbarcazione. È costituito da 9 cifre. Deve corrispondere ad una imbarcazione posseduta dall'utente che invia i dati.
+* "longitudine": Valore in gradi decimali(DD) della longitudine della posizione inviata. Deve essere compreso tra -180° e 180°.
+* "latitudine": Valore in gradi decimali(DD) della latitudine della posizione inviata. Deve essere compreso tra -90 e 90°.
+* "stato": Stato dell'imbarcazione al momento dell'invio dei dati istantanei. Può essere uno tra "in navigazione", "in pesca" o "stazionaria".
+* "velocità": Velocità in km/h dell'imbarcazione al momento dell'invio dei dati istntanei.
+
+Di seguito un esempio di body della richiesta valido:
+~~~
+{
+    "mmsi": 123456789,
+    "longitudine": 10,
+    "latitudine": 10,
+    "stato": "in navigazione",
+    "velocità": 60
+}
+~~~
+In questo esempio, longitudine e latitudine corrispondono a 10.000000°, in modo da essere identificate come coordinate valide.
+#### Visualizzazione dello stato di tutte le imbarcazioni di un utente associate a una geofence(/getStatoImbarcazioniUser/:geofence)
+Rotta di tipo GET che permette di visualizzare se le proprie imbarcazioni si trovino all'interno o all'esterno di una determinata Geofence e, per quelle che si trovano all'interno, il tempo di permanenza in essa in minuti. Si deve inserire come parametro il nome della Geofence. 
+
+Di seguito un esempio di rotta valida: 
+~~~
+/getStatoImbarcazioniUser/Gotham
+~~~
+
+#### Visualizzazione di tutte le associazioni di imbarcazioni possedute da un utente(/getAssociazioni)
+Rotta di tipo GET che permette di visualizzare l'elenco delle associazioni tra le imbarcazioni possedute dall'utente che fa la richiesta e le Geofences a loro associate.
+
+#### Visualizzazione del credito di un utente(/getCredito)
+Rotta di tipo GET che permette di visualizzare il proprio credito.
 
 ## Diagrammi UML
 
