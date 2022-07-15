@@ -178,13 +178,13 @@ Rotta di tipo GET che permette di visualizzare tutte le segnalazioni partite con
  Per avere l'autorizzazione a chiamare le rotte user, c'è bisogno di utilizzare un JWT che abbia specificato come ruolo 'user'.
  Di seguito verranno descritte in dettaglio tutte le rotte previste per questo ruolo. Verrà dato per scontato il fatto di aver inserito nella richiesta un JWT valido.
 #### Invio di dati istantanei (/inviaDati)
-Questa rotta permette di inviare i dati istantanei relativi ad una imbarcazione.
+Questa rotta permette di inviare i dati istantanei relativi ad una imbarcazione. L'invio ha un costo di 0,025 token; l'utente deve possedere credito sufficiente, altrimenti si verrà visto recapitare il messaggio di errore 401 Unauthorized. La posizione inviata viene valutata per tutte le associazioni dell'imbarcazione e vengono registrate eventuali entrate o uscite dalle Geofences associate. Inoltre, un ingresso in una geofence comporta un incremento unitario del numero di violazioni (se è passata più di un'ora dall'ultimo ingresso registrato nella stessa Geofence). Se queste superano le 5 violazioni in un intervallo temporale di 48 ore, viene generata una segnalazione con stato "in corso" per quella associazione. La segnalazione rientra se, nelle successive 48 ore dall'ultima uscita dalla geofence, non si commettono ulteriori violazioni di ingresso della geofence stessa. Il numero di violazioni aumenta anche se si supera il limite di velocità all'interno di una Geofence in cui questo limite è presente.
 
 I dati istantanei devono essere inseriti nel body della richiesta in formato JSON con la seguente struttura:
 
 * "mmsi": Identificativo univoco dell'imbarcazione. È costituito da 9 cifre. Deve corrispondere ad una imbarcazione posseduta dall'utente che invia i dati.
-* "longitudine": Valore in gradi decimali (DD) della longitudine della posizione inviata. Deve essere compreso tra -180° e 180°.
-* "latitudine": Valore in gradi decimali (DD) della latitudine della posizione inviata. Deve essere compreso tra -90 e 90°.
+* "longitudine": Valore in gradi decimali(DD) della longitudine della posizione inviata. Deve essere compreso tra -180° e 180°.
+* "latitudine": Valore in gradi decimali(DD) della latitudine della posizione inviata. Deve essere compreso tra -90 e 90°.
 * "stato": Stato dell'imbarcazione al momento dell'invio dei dati istantanei. Può essere uno tra "in navigazione", "in pesca" o "stazionaria".
 * "velocità": Velocità in km/h dell'imbarcazione al momento dell'invio dei dati istntanei.
 
