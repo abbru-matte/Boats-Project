@@ -199,7 +199,7 @@ Di seguito un esempio di body della richiesta valido:
 }
 ~~~
 In questo esempio, longitudine e latitudine corrispondono a 10.000000°, in modo da essere identificate come coordinate valide.
-#### Visualizzazione dello stato di tutte le imbarcazioni di un utente associate a una geofence(/getStatoImbarcazioniUser/:geofence)
+#### Visualizzazione dello stato di tutte le imbarcazioni di un utente associate a una geofence (/getStatoImbarcazioniUser/:geofence)
 Rotta di tipo GET che permette di visualizzare se le proprie imbarcazioni si trovino all'interno o all'esterno di una determinata Geofence e, per quelle che si trovano all'interno, il tempo di permanenza in essa in minuti. Si deve inserire come parametro il nome della Geofence. 
 
 Di seguito un esempio di rotta valida: 
