@@ -430,3 +430,31 @@ Chain of Responsibility ->> App : response
 App ->> ResponseHTTP : successResponse(response)
 ResponseHTTP ->> Client : res.send(JSONresponse)
 ```
+## Design Pattern utilizzati
+### Singleton
+Design pattern di tipo creazionale. 
+Ha lo scopo di garantire che di una determinata classe venga creata una e una sola istanza, e di fornire un punto di accesso globale a tale istanza. 
+
+Nel progetto è stato usato per creare l'istanza della connessione con il Database, in modo da essere sicuri che ne sia presente una sola.
+### Chain of Responsibility (e Middleware)
+Design pattern di tipo comportamentale.
+Permette di separare gli oggetti che invocano richieste, dagli oggetti che le gestiscono, dando ad ognuno la possibilità di gestire queste richieste. La richiesta viene inviata e "segue la catena" di handler, passando da uno all'altro, finché non trova quello che la gestisce.
+
+Nel nostro caso ci si è serviti di strati Middleware, funzioni che hanno accesso all'oggetto della richiesta (req), all'oggetto della risposta (res) e al successivo Middleware nella catena (next). In questo modo in qualsiasi punto della catena si può bloccare l'esecuzione e ritornare gli errori riscontrati.
+
+Sono stati utilizzati tre diversi Middleware:
+* Middleware Auth: usato per la verifica del JWT specificato nella richiesta. Controlla che sia presente il token JWT nella richiesta e che questo sia valido. Inoltre, autorizza le richieste se i permessi associati al ruolo specificato nel JWT sono sufficienti per la chiamata della rotta. In caso contrario, viene generato un errore che verrà gestito dall'Error Handler Middleware
+* Middleware Validation: usato, in combinazione con il Pattern [Proxy](#proxy), per la verifica dei parametri passati in GET o POST. È questo middleware che si occupa di interfacciarsi con il Model e di conseguenza con il Database esterno (attraverso Sequelize). Inoltre, si occupa di preparare i dati della risposta e di inviarli al Builder della risposta HTTP, il quale invierà effettivamente all'utente la risposta.
+* Middleware Error Handler: verifica se sono stati generati errori negli strati precedenti della catena. In caso positivo, invia l'errore al [Builder](#builder) degli errori della richiesta HTTP, il quale costruirà e invierà effettivamente all'utente la risposta con gli errori riscontrati.
+
+### Proxy 
+Design pattern di tipo strutturale.
+Un Proxy è un oggetto che controlla l'accesso ad un altro oggetto, definito Subject. Un oggetto agisce come un'interfaccia per un altro oggetto. Il proxy sta nel mezzo e protegge l'accesso all'oggetto vero e proprio. Può essere utile per aggiungere la validazione dell'input.
+
+È proprio questo ultimo punto il motivo per cui è stato implementato il Proxy nel nostro progetto. Infatti, quando l'utente invia una richiesta contenente dei parametri, questi prima di essere inseriti nel Database vengono verificati e sanificati, per assicurarsi che rispettino i formati previsti. Il proxy prende i dati inseriti dall'utente e verifica che siano rispettate tutte le condizioni previste per ogni campo. In caso negativo, esso genera un errore personalizzato, permettendo così all'utente di intuire facilmente il dato inserito male e consentendogli una rapida correzione. In questo modo si è sicuri che i dati inseriti nel Database siano conformi ed utilizzabili nelle successive funzionalità, senza problemi di compatibilità.
+
+### Builder
+Design pattern di tipo creazionale.
+Consente di costruire oggetti più complessi passo dopo passo. Permette così di creare diverse rappresentazioni di oggetti della stessa classe. 
+
+Nel nostro caso, si utilizza il Builder per costruire la risposta HTTP alle richieste dell'utente. Queste richieste possono essere di tipo diverso (POST,GET,PUT,DELETE), di conseguenza la risposta deve avere caratteristiche peculiari, pur rimanendo della tipologia HTTP. 
