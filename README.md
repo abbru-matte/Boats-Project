@@ -1,4 +1,9 @@
 # Boats-Project
+# Boats-Project
+## Descrizione del progetto
+La seguente repository, Boats Project, contiene il progetto realizzato da Abbruzzetti Matteo e Pallini Daniele per l'esame di Programmazione Avanzata del corso di Laurea magistrale di Ingegneria Informatica e dell'Automazione (A.A. 2021/2022).
+
+L'obiettivo di Boats Project è quello di realizzare un servizio di back-end che sia in grado di gestire un programma che possa controllare le imbarcazioni degli utenti in diverse aree geografiche, denominate Geofences.
 ## Rotte
 Di seguito l'elenco delle rotte. Qualsiasi rotta non implementata restituisce l'error 404 NOT FOUND
 
