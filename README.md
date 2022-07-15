@@ -237,6 +237,11 @@ Rotta di tipo GET che permette di visualizzare il proprio credito.
 ## Diagrammi UML
 
 ### Diagramma dei casi d'uso
+#### Diagramma dei casi d'uso dell'utente con ruolo Admin
+![useCaseDiagramAdmin](https://user-images.githubusercontent.com/57831411/179208425-c22e4d15-b0cb-426c-baa9-c81c374256f5.png)
+
+#### Diagramma dei casi d'uso dell'utente con ruolo User
+![useCaseDiagramUser](https://user-images.githubusercontent.com/57831411/179208481-a9c76944-bac9-4f17-a35d-aaebf947b0eb.png)
 
 ### Diagrammi delle sequenze
 Di seguito vengono riportati i diagrammi delle sequenze di alcune delle operazioni più interessanti, uno per tipo di richiesta HTTP.
