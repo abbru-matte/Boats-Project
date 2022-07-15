@@ -1,4 +1,14 @@
 # Boats Project
+
+## Indice
+1. [Descrizione del progetto](#descrizione-del-progetto)
+2. [Requisiti](#requisiti)
+3. [Avvio](#avvio)
+4. [Rotte](#rotte)
+5. [Diagrammi UML](#diagrammi-uml)
+6. [Design Pattern Utilizzati](#design-pattern-utilizzati)
+7. [Test](#test)
+
 ## Descrizione del progetto
 L'obiettivo è quello di realizzare un servizio di back-end che definisca delle aree geografiche marittime, denominate Geofence, in cui ogni ingresso e ogni uscita di imbarcazioni deve essere registrato. Ad ogni Geofence possono essere associate delle imbarcazioni, identificate tramite un mmsi (codice identificativo univoco). L'associazione è quella che abilita la memorizzazione degli eventi di entrata e uscita relativi all'imbarcazione e alla Geofence collegate dall'associazione stessa. Un ingresso in una geofence comporta un incremento unitario del numero di violazioni (se è passata più di un'ora dall'ultimo ingresso registrato nella stessa Geofence). Se il numero supera le 5 violazioni in un intervallo temporale di 48 ore, viene generata una segnalazione con stato "in corso" per quella associazione. La segnalazione rientra se, nelle successive 48 ore dall'ultima uscita dalla Geofence, non si commettono ulteriori violazioni di ingresso della geofence stessa. Il numero di violazioni aumenta anche se si supera il limite di velocità all'interno di una Geofence in cui questo limite è presente.
 
@@ -20,6 +30,33 @@ Corrisponde all'utente proprietario di imbarcazioni. Può:
 * Visualizzare lo stato di tutte le proprie imbarcazioni associate a una determinata Geofence (con relativo tempo di permanenza in minuti per quelle all'interno) 
 * Visualizzare l'elenco di tutte le segnalazioni registrare(in corso e rientrate)
 * Visualizzare il proprio credito residuo.
+
+## Requisiti
+Assicurarsi di avere già installati:
+- [Node.js](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+- Docker (avviato)
+- Docker-compose
+- Git
+
+## Avvio
+
+1. Clonare la repository
+
+```git clone https://github.com/abbru-matte/Boats-Project```
+
+2. Posizionarsi all'interno della cartella scaricata 
+
+```cd Boats-Project```
+
+3. Lanciare il docker-compose:
+
+```docker-compose up```
+
+4. Terminata la procedura, si può accedere al servizio su localhost:8080/ chiamando la rotta desiderata. 
+
+> **Note**
+>: Il comando docker-compose up effettua anche l'operazione di seeding del Database (il file seed.sql è all'interno della cartella scripts della repository).
+
 ## Rotte
 Di seguito l'elenco delle rotte. Qualsiasi rotta non implementata restituisce l'error 404 NOT FOUND
 
@@ -175,9 +212,8 @@ Rotta di tipo GET che permette di visualizzare tutti gli eventi di entrata e usc
 
 #### Visualizzazione dello stato di tutte le imbarcazioni associate a una Geofence (/getStatoImbarcazioni/:geofence)
 Rotta di tipo GET che permette di visualizzare lo stato  di tutte le imbarcazioni in una Geofence prestabilita. Si deve inserire come parametro il nome della Geofence. Un esempio di rotta valida è:
-~~~
-/getStatoImbarcazioni/Gotham
-~~~
+
+```/getStatoImbarcazioni/Gotham```
 
 #### Visualizzazione delle posizioni di una imbarcazione in un intervallo temporale (/getPosizioni/:mmsi/:dataInizio/:dataFine)
 Rotta di tipo GET che permette di visualizzare la posizione di una imbarcazione in un determinato intervallo temporale. I parametri da inserire nella rotta sono: 
@@ -188,9 +224,8 @@ Rotta di tipo GET che permette di visualizzare la posizione di una imbarcazione 
  Per le date, il formato accettato è YYYY-MM-DD.
 
 Di seguito un esempio di rotta valida:
-~~~
-/getPosizioni/123456789/2022-07-01/2022-07-14
-~~~
+
+```/getPosizioni/123456789/2022-07-01/2022-07-14```
 ### Rotte Admin/User
 #### Visualizzazione di tutte le segnalazioni (/getSegnalazioni)
 Rotta di tipo GET che permette di visualizzare tutte le segnalazioni registrate con il relativo stato (in corso o rientrata).
@@ -225,9 +260,8 @@ In questo esempio, longitudine e latitudine corrispondono a 10.000000°, in modo
 Rotta di tipo GET che permette di visualizzare se le proprie imbarcazioni si trovino all'interno o all'esterno di una determinata Geofence e, per quelle che si trovano all'interno, il tempo di permanenza in essa in minuti. Si deve inserire come parametro il nome della Geofence. 
 
 Di seguito un esempio di rotta valida: 
-~~~
-/getStatoImbarcazioniUser/Gotham
-~~~
+
+```/getStatoImbarcazioniUser/Gotham```
 
 #### Visualizzazione di tutte le associazioni di imbarcazioni possedute da un utente (/getAssociazioni)
 Rotta di tipo GET che permette di visualizzare l'elenco delle associazioni tra le imbarcazioni possedute dall'utente che fa la richiesta e le Geofences a loro associate.
@@ -458,3 +492,6 @@ Design pattern di tipo creazionale.
 Consente di costruire oggetti più complessi passo dopo passo. Permette così di creare diverse rappresentazioni di oggetti della stessa classe. 
 
 Nel nostro caso, si utilizza il Builder per costruire la risposta HTTP alle richieste dell'utente. Queste richieste possono essere di tipo diverso (POST,GET,PUT,DELETE), di conseguenza la risposta deve avere caratteristiche peculiari, pur rimanendo della tipologia HTTP. 
+
+## Test
+Nella repository è presente il file .collection che può essere importato su Postman. Al suo interno sono definite tutte le [rotte](#rotte) descritte, ciascuna già pronta con dati di prova per essere testata. Sono inclusi anche i token JWT di utenti esistenti, in modo che le richieste vengano validate correttamente. In questo modo si possono testare agevolmente tutte le funzionalità implementate.
