@@ -1,6 +1,6 @@
 import { ResponseHttpBuilder } from "../response/ResponseHttpBuilder";
 /**
- * Invia la risposta di una POST andata a buon fine
+ * Invia la risposta di una POST (o PUT o DELETE) andata a buon fine
  * @param res contiene i parametri per la risposta HTTP
  */
 export const successResponsePOST = (res:any) => {

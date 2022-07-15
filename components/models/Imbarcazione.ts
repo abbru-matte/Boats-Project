@@ -90,7 +90,7 @@ export async function validatorBodyDatiIstantanei(dati:any,proprietario:string):
     });
 
     if(!checkImbarcazione) return new Error("L'mmsi deve corrispondere ad una imbarcazione esistente");
-    return "Post OK";
+    return "Get OK";
 }
 /**
  * Cerca la corrispondenza dell'mmsi nella tabella imbarcazioni

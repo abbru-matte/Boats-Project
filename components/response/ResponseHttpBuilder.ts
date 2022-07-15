@@ -1,6 +1,6 @@
 import { ResponseHttp} from './ResponseHttp';
 /**
- * Classe che valorizza gli attributi della risposta HTTP e la costruisce
+ * Classe che va a valorizzare gli attributi della risposta HTTP e a costruirla
  */
 export class ResponseHttpBuilder{
     private status:string;
@@ -14,34 +14,34 @@ export class ResponseHttpBuilder{
         this.data = data;
         return this;
     }
-    //Status della risposta
+    //Imposta lo status della risposta
     setStatus(status:string){
         this.status = status;
         return this;
     }
-    //Messaggio della risposta
+    //Imposta il messaggio della risposta
     setMessage(messaggio:string){
         this.messaggio = messaggio;
         return this;
     }
-    //Si setta lo status code della risposta HTTP
+    //Imposta lo Status code della risposta HTTP
     setStatusCode(status_code:number){
         this.status_code = status_code;
         return this;
     }
-    //Ottiene lo status
+    //Restituisce lo status
     getStatus():string{
         return this.status;
     }
-    //Ottiene lo status code della risposta
+    //Restituisce lo status code della risposta
     getStatus_code():number{
         return this.status_code;
     }
-    //Ottiene il messaggio della risposta
+    //Restituisce il messaggio della risposta
     getMessage():string{
         return this.messaggio;
     }
-    //Ottiene i dati della risposta
+    //Restituisce i dati della risposta
     getData():any{
         return this.data;
     }
