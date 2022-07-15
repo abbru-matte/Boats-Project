@@ -1,4 +1,14 @@
 # Boats Project
+
+## Indice
+1. [Descrizione del progetto](#descrizione-del-progetto)
+2. [Requisiti](#requisiti)
+3. [Avvio](#avvio)
+4. [Rotte](#rotte)
+5. [Diagrammi UML](#diagrammi-uml)
+6. [Design Pattern Utilizzati](#design-pattern-utilizzati)
+7. [Test](#test)
+
 ## Descrizione del progetto
 L'obiettivo è quello di realizzare un servizio di back-end che definisca delle aree geografiche marittime, denominate Geofence, in cui ogni ingresso e ogni uscita di imbarcazioni deve essere registrato. Ad ogni Geofence possono essere associate delle imbarcazioni, identificate tramite un mmsi (codice identificativo univoco). L'associazione è quella che abilita la memorizzazione degli eventi di entrata e uscita relativi all'imbarcazione e alla Geofence collegate dall'associazione stessa. Un ingresso in una geofence comporta un incremento unitario del numero di violazioni (se è passata più di un'ora dall'ultimo ingresso registrato nella stessa Geofence). Se il numero supera le 5 violazioni in un intervallo temporale di 48 ore, viene generata una segnalazione con stato "in corso" per quella associazione. La segnalazione rientra se, nelle successive 48 ore dall'ultima uscita dalla Geofence, non si commettono ulteriori violazioni di ingresso della geofence stessa. Il numero di violazioni aumenta anche se si supera il limite di velocità all'interno di una Geofence in cui questo limite è presente.
 
@@ -20,6 +30,33 @@ Corrisponde all'utente proprietario di imbarcazioni. Può:
 * Visualizzare lo stato di tutte le proprie imbarcazioni associate a una determinata Geofence (con relativo tempo di permanenza in minuti per quelle all'interno) 
 * Visualizzare l'elenco di tutte le segnalazioni registrare(in corso e rientrate)
 * Visualizzare il proprio credito residuo.
+
+## Requisiti
+Assicurarsi di avere già installati:
+- [Node.js](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+- Docker (avviato)
+- Docker-compose
+- Git
+
+## Avvio
+
+1. Clonare la repository
+
+```git clone https://github.com/abbru-matte/Boats-Project```
+
+2. Posizionarsi all'interno della cartella scaricata 
+
+```cd Boats-Project```
+
+3. Lanciare il docker-compose:
+
+```docker-compose up```
+
+4. Terminata la procedura, si può accedere al servizio su localhost:8080/ chiamando la rotta desiderata. 
+
+> **Note**
+>: Il comando docker-compose up effettua anche l'operazione di seeding del Database (il file seed.sql è all'interno della cartella scripts della repository).
+
 ## Rotte
 Di seguito l'elenco delle rotte. Qualsiasi rotta non implementata restituisce l'error 404 NOT FOUND
 
@@ -175,9 +212,8 @@ Rotta di tipo GET che permette di visualizzare tutti gli eventi di entrata e usc
 
 #### Visualizzazione dello stato di tutte le imbarcazioni associate a una Geofence (/getStatoImbarcazioni/:geofence)
 Rotta di tipo GET che permette di visualizzare lo stato  di tutte le imbarcazioni in una Geofence prestabilita. Si deve inserire come parametro il nome della Geofence. Un esempio di rotta valida è:
-~~~
-/getStatoImbarcazioni/Gotham
-~~~
+
+```/getStatoImbarcazioni/Gotham```
 
 #### Visualizzazione delle posizioni di una imbarcazione in un intervallo temporale (/getPosizioni/:mmsi/:dataInizio/:dataFine)
 Rotta di tipo GET che permette di visualizzare la posizione di una imbarcazione in un determinato intervallo temporale. I parametri da inserire nella rotta sono: 
@@ -188,9 +224,8 @@ Rotta di tipo GET che permette di visualizzare la posizione di una imbarcazione 
  Per le date, il formato accettato è YYYY-MM-DD.
 
 Di seguito un esempio di rotta valida:
-~~~
-/getPosizioni/123456789/2022-07-01/2022-07-14
-~~~
+
+```/getPosizioni/123456789/2022-07-01/2022-07-14```
 ### Rotte Admin/User
 #### Visualizzazione di tutte le segnalazioni (/getSegnalazioni)
 Rotta di tipo GET che permette di visualizzare tutte le segnalazioni registrate con il relativo stato (in corso o rientrata).
@@ -205,8 +240,8 @@ Questa rotta permette di inviare i dati istantanei relativi ad una imbarcazione.
 I dati istantanei devono essere inseriti nel body della richiesta in formato JSON con la seguente struttura:
 
 * "mmsi": Identificativo univoco dell'imbarcazione. È costituito da 9 cifre. Deve corrispondere ad una imbarcazione posseduta dall'utente che invia i dati.
-* "longitudine": Valore in gradi decimali(DD) della longitudine della posizione inviata. Deve essere compreso tra -180° e 180°.
-* "latitudine": Valore in gradi decimali(DD) della latitudine della posizione inviata. Deve essere compreso tra -90 e 90°.
+* "longitudine": Valore in gradi decimali (DD) della longitudine della posizione inviata. Deve essere compreso tra -180° e 180°.
+* "latitudine": Valore in gradi decimali (DD) della latitudine della posizione inviata. Deve essere compreso tra -90 e 90°.
 * "stato": Stato dell'imbarcazione al momento dell'invio dei dati istantanei. Può essere uno tra "in navigazione", "in pesca" o "stazionaria".
 * "velocità": Velocità in km/h dell'imbarcazione al momento dell'invio dei dati istntanei.
 
@@ -225,9 +260,8 @@ In questo esempio, longitudine e latitudine corrispondono a 10.000000°, in modo
 Rotta di tipo GET che permette di visualizzare se le proprie imbarcazioni si trovino all'interno o all'esterno di una determinata Geofence e, per quelle che si trovano all'interno, il tempo di permanenza in essa in minuti. Si deve inserire come parametro il nome della Geofence. 
 
 Di seguito un esempio di rotta valida: 
-~~~
-/getStatoImbarcazioniUser/Gotham
-~~~
+
+```/getStatoImbarcazioniUser/Gotham```
 
 #### Visualizzazione di tutte le associazioni di imbarcazioni possedute da un utente (/getAssociazioni)
 Rotta di tipo GET che permette di visualizzare l'elenco delle associazioni tra le imbarcazioni possedute dall'utente che fa la richiesta e le Geofences a loro associate.
@@ -430,3 +464,34 @@ Chain of Responsibility ->> App : response
 App ->> ResponseHTTP : successResponse(response)
 ResponseHTTP ->> Client : res.send(JSONresponse)
 ```
+## Design Pattern utilizzati
+### Singleton
+Design pattern di tipo creazionale. 
+Ha lo scopo di garantire che di una determinata classe venga creata una e una sola istanza, e di fornire un punto di accesso globale a tale istanza. 
+
+Nel progetto è stato usato per creare l'istanza della connessione con il Database, in modo da essere sicuri che ne sia presente una sola.
+### Chain of Responsibility (e Middleware)
+Design pattern di tipo comportamentale.
+Permette di separare gli oggetti che invocano richieste, dagli oggetti che le gestiscono, dando ad ognuno la possibilità di gestire queste richieste. La richiesta viene inviata e "segue la catena" di handler, passando da uno all'altro, finché non trova quello che la gestisce.
+
+Nel nostro caso ci si è serviti di strati Middleware, funzioni che hanno accesso all'oggetto della richiesta (req), all'oggetto della risposta (res) e al successivo Middleware nella catena (next). In questo modo in qualsiasi punto della catena si può bloccare l'esecuzione e ritornare gli errori riscontrati.
+
+Sono stati utilizzati tre diversi Middleware:
+* Middleware Auth: usato per la verifica del JWT specificato nella richiesta. Controlla che sia presente il token JWT nella richiesta e che questo sia valido. Inoltre, autorizza le richieste se i permessi associati al ruolo specificato nel JWT sono sufficienti per la chiamata della rotta. In caso contrario, viene generato un errore che verrà gestito dall'Error Handler Middleware
+* Middleware Validation: usato, in combinazione con il Pattern [Proxy](#proxy), per la verifica dei parametri passati in GET o POST. È questo middleware che si occupa di interfacciarsi con il Model e di conseguenza con il Database esterno (attraverso Sequelize). Inoltre, si occupa di preparare i dati della risposta e di inviarli al Builder della risposta HTTP, il quale invierà effettivamente all'utente la risposta.
+* Middleware Error Handler: verifica se sono stati generati errori negli strati precedenti della catena. In caso positivo, invia l'errore al [Builder](#builder) degli errori della richiesta HTTP, il quale costruirà e invierà effettivamente all'utente la risposta con gli errori riscontrati.
+
+### Proxy 
+Design pattern di tipo strutturale.
+Un Proxy è un oggetto che controlla l'accesso ad un altro oggetto, definito Subject. Un oggetto agisce come un'interfaccia per un altro oggetto. Il proxy sta nel mezzo e protegge l'accesso all'oggetto vero e proprio. Può essere utile per aggiungere la validazione dell'input.
+
+È proprio questo ultimo punto il motivo per cui è stato implementato il Proxy nel nostro progetto. Infatti, quando l'utente invia una richiesta contenente dei parametri, questi prima di essere inseriti nel Database vengono verificati e sanificati, per assicurarsi che rispettino i formati previsti. Il proxy prende i dati inseriti dall'utente e verifica che siano rispettate tutte le condizioni previste per ogni campo. In caso negativo, esso genera un errore personalizzato, permettendo così all'utente di intuire facilmente il dato inserito male e consentendogli una rapida correzione. In questo modo si è sicuri che i dati inseriti nel Database siano conformi ed utilizzabili nelle successive funzionalità, senza problemi di compatibilità.
+
+### Builder
+Design pattern di tipo creazionale.
+Consente di costruire oggetti più complessi passo dopo passo. Permette così di creare diverse rappresentazioni di oggetti della stessa classe. 
+
+Nel nostro caso, si utilizza il Builder per costruire la risposta HTTP alle richieste dell'utente. Queste richieste possono essere di tipo diverso (POST,GET,PUT,DELETE), di conseguenza la risposta deve avere caratteristiche peculiari, pur rimanendo della tipologia HTTP. 
+
+## Test
+Nella repository è presente il file .collection che può essere importato su Postman. Al suo interno sono definite tutte le [rotte](#rotte) descritte, ciascuna già pronta con dati di prova per essere testata. Sono inclusi anche i token JWT di utenti esistenti, in modo che le richieste vengano validate correttamente. In questo modo si possono testare agevolmente tutte le funzionalità implementate.
