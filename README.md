@@ -1,5 +1,4 @@
 # Boats-Project
-# Boats-Project
 ## Descrizione del progetto
 La seguente repository, Boats Project, contiene il progetto realizzato da Abbruzzetti Matteo e Pallini Daniele per l'esame di Programmazione Avanzata del corso di Laurea magistrale di Ingegneria Informatica e dell'Automazione (A.A. 2021/2022).
 
