@@ -12,13 +12,13 @@ Di seguito l'elenco delle rotte. Qualsiasi rotta non implementata restituisce l'
 |DELETE|[/deleteAssociazione](#rimozione-di-unassociazione-deleteassociazione)|Admin|
 |GET|[/getAllImbarcazioni](#visualizzazione-di-tutte-le-imbarcazioni-getallimbarcazioni)|Admin|
 |GET|[/getAllGeofences](#visualizzazione-di-tutte-le-geofences-getallgeofences)|Admin|
-|GET|[/getAllUsers](#visualizzazione-di-tutte-gli-utenti-getallusers)|Admin|
+|GET|[/getAllUsers](#visualizzazione-di-tutti-gli-utenti-getallusers)|Admin|
 |GET|[/getAllAssociazioni](#visualizzazione-di-tutte-le-associazioni-getallassociazioni)|Admin|
 |GET|[/getEntrateUscite](#visualizzazione-di-tutte-le-entrate-e-uscite-getentrateuscite)|Admin|
 |GET|[/getStatoImbarcazioni/:geofence](#visualizzazione-dello-stato-di-tutte-le-imbarcazioni-associate-a-una-geofence-getstatoimbarcazionigeofence)|Admin|
 |GET|[/getPosizioni/:mmsi/:dataInizio/:dataFine ](#visualizzazione-delle-posizioni-di-una-imbarcazione-in-un-intervallo-temporale-getposizionimmsidatainiziodatafine)|Admin|
 |GET|[/getSegnalazioni](#visualizzazione-di-tutte-le-segnalazioni-getsegnalazioni)|Admin|
-|GET|[/getStatoImbarcazioniUser/:geofence ](#visualizzazione-dello-stato-di-tutte-le-imbarcazioni-associate-a-una-geofence-di-un-utente-getstatoimbarcazioniusergeofence)|User|
+|GET|[/getStatoImbarcazioniUser/:geofence ](#visualizzazione-dello-stato-di-tutte-le-imbarcazioni-di-un-utente-associate-a-una-geofence-getstatoimbarcazioniusergeofence)|User|
 |GET|[/getAssociazioni](#visualizzazione-di-tutte-le-associazioni-di-imbarcazioni-possedute-da-un-utente-getassociazioni)|User|
 |GET|[/getCredito](#visualizzazione-del-credito-di-un-utente-getcredito)|User|
 
@@ -149,7 +149,7 @@ Rotta di tipo GET che permette di visualizzare tutti gli utenti presenti nel Dat
 #### Visualizzazione di tutte le associazioni (/getAllAssociazioni)
 Rotta di tipo GET che permette di visualizzare tutti le associazioni tra imbarcazioni e Geofences presenti nel Database.
 
-#### Visualizzazione di tutte le entrate e uscite (/getAllEntrateUscite)
+#### Visualizzazione di tutte le entrate e uscite (/getEntrateUscite)
 Rotta di tipo GET che permette di visualizzare tutti gli eventi di entrata e uscita di ogni associazione registrati nel Database attraverso l'invio di dati istantanei degli utenti.
 
 #### Visualizzazione dello stato di tutte le imbarcazioni associate a una Geofence (/getStatoImbarcazioni/:geofence)
@@ -171,7 +171,7 @@ Di seguito un esempio di rotta valida:
 /getPosizioni/123456789/2022-07-01/2022-07-14
 ~~~
 
-#### Visualizzazione di tutte le segnalazioni(/getSegnalazioni)
+#### Visualizzazione di tutte le segnalazioni (/getSegnalazioni)
 Rotta di tipo GET che permette di visualizzare tutte le segnalazioni partite con il relativo stato (in corso o rientrata).
 
 ### Rotte User
@@ -183,8 +183,8 @@ Questa rotta permette di inviare i dati istantanei relativi ad una imbarcazione.
 I dati istantanei devono essere inseriti nel body della richiesta in formato JSON con la seguente struttura:
 
 * "mmsi": Identificativo univoco dell'imbarcazione. È costituito da 9 cifre. Deve corrispondere ad una imbarcazione posseduta dall'utente che invia i dati.
-* "longitudine": Valore in gradi decimali(DD) della longitudine della posizione inviata. Deve essere compreso tra -180° e 180°.
-* "latitudine": Valore in gradi decimali(DD) della latitudine della posizione inviata. Deve essere compreso tra -90 e 90°.
+* "longitudine": Valore in gradi decimali (DD) della longitudine della posizione inviata. Deve essere compreso tra -180° e 180°.
+* "latitudine": Valore in gradi decimali (DD) della latitudine della posizione inviata. Deve essere compreso tra -90 e 90°.
 * "stato": Stato dell'imbarcazione al momento dell'invio dei dati istantanei. Può essere uno tra "in navigazione", "in pesca" o "stazionaria".
 * "velocità": Velocità in km/h dell'imbarcazione al momento dell'invio dei dati istntanei.
 
@@ -207,10 +207,10 @@ Di seguito un esempio di rotta valida:
 /getStatoImbarcazioniUser/Gotham
 ~~~
 
-#### Visualizzazione di tutte le associazioni di imbarcazioni possedute da un utente(/getAssociazioni)
+#### Visualizzazione di tutte le associazioni di imbarcazioni possedute da un utente (/getAssociazioni)
 Rotta di tipo GET che permette di visualizzare l'elenco delle associazioni tra le imbarcazioni possedute dall'utente che fa la richiesta e le Geofences a loro associate.
 
-#### Visualizzazione del credito di un utente(/getCredito)
+#### Visualizzazione del credito di un utente (/getCredito)
 Rotta di tipo GET che permette di visualizzare il proprio credito.
 
 ## Diagrammi UML
