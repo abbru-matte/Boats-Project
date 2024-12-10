@@ -1,19 +1,20 @@
 # Boats Project
 
 ## Indice
-1. [Descrizione del progetto](#descrizione-del-progetto)
-2. [Requisiti](#requisiti)
-3. [Avvio](#avvio)
-4. [Rotte](#rotte)
-5. [Diagrammi UML](#diagrammi-uml)
-6. [Design Pattern Utilizzati](#design-pattern-utilizzati)
-7. [Test](#test)
+1. [Descrizione del progetto (ITA)](#descrizione-del-progetto-ita)
+2. [Project Description (ENG)](#project-description-eng)
+3. [Requisiti](#requisiti)
+4. [Avvio](#avvio)
+5. [Rotte](#rotte)
+6. [Diagrammi UML](#diagrammi-uml)
+7. [Design Pattern Utilizzati](#design-pattern-utilizzati)
+8. [Test](#test)
 
-## Descrizione del progetto
+## Descrizione del progetto (ITA)
 L'obiettivo è quello di realizzare un servizio di back-end che definisca delle aree geografiche marittime, denominate Geofence, in cui ogni ingresso e ogni uscita di imbarcazioni deve essere registrato. Ad ogni Geofence possono essere associate delle imbarcazioni, identificate tramite un mmsi (codice identificativo univoco). L'associazione è quella che abilita la memorizzazione degli eventi di entrata e uscita relativi all'imbarcazione e alla Geofence collegate dall'associazione stessa. Un ingresso in una geofence comporta un incremento unitario del numero di violazioni (se è passata più di un'ora dall'ultimo ingresso registrato nella stessa Geofence). Se il numero supera le 5 violazioni in un intervallo temporale di 48 ore, viene generata una segnalazione con stato "in corso" per quella associazione. La segnalazione rientra se, nelle successive 48 ore dall'ultima uscita dalla Geofence, non si commettono ulteriori violazioni di ingresso della geofence stessa. Il numero di violazioni aumenta anche se si supera il limite di velocità all'interno di una Geofence in cui questo limite è presente.
 
 Sono stati previsti due ruoli distinti, ognuno con funzionalità dedicate.
-#### Ruolo "admin"
+#### Ruolo ‘admin’
 Corrisponde all'amministratore di sistema. Può:
 * Inserire nuove Geofence, nuove imbarcazioni, aggiungere e rimuovere associazioni.
 * Visualizzare tutte le imbarcazioni, Geofences e associazioni registrate. 
@@ -23,13 +24,35 @@ Corrisponde all'amministratore di sistema. Può:
 * Visualizzare lo stato di tutte le imbarcazioni associate ad una determinata Geofence (con relativo tempo di permanenza in minuti per quelle all'interno). 
 * Ricaricare il credito di un utente.
 
-#### Ruolo "user"
+#### Ruolo ‘user’
 Corrisponde all'utente proprietario di imbarcazioni. Può:
 * Inviare i dati istantanei di una imbarcazione da lui posseduta (l'invio ha un costo di 0,025 token). 
 * Visualizzare tutte le associazioni per le proprie imbarcazioni. 
 * Visualizzare lo stato di tutte le proprie imbarcazioni associate a una determinata Geofence (con relativo tempo di permanenza in minuti per quelle all'interno) 
 * Visualizzare l'elenco di tutte le segnalazioni registrare(in corso e rientrate)
 * Visualizzare il proprio credito residuo.
+
+## Project Description (ENG)
+The objective is to realise a back-end service that defines maritime geographical areas, called Geofences, in which each entry and exit of vessels must be registered. Vessels can be associated to each Geofence, identified by a mmsi (unique identification code). The association is the one that enables the storage of entry and exit events relating to the vessel and the Geofence linked by the association. An entry in a Geofence results in a unit increase in the number of violations (if more than one hour has passed since the last entry recorded in the same Geofence). If the number exceeds 5 violations in a 48-hour time interval, a report is generated with status ‘in progress’ for that association. The alert is lifted if no further violations are committed in the next 48 hours after the last exit from the geofence. The number of violations also increases if the speed limit is exceeded within a Geofence where this limit is present.
+
+Two separate roles are provided, each with dedicated functionality.
+#### ‘admin’ role
+Corresponds to the system administrator. Can:
+* Insert new Geofences, new boats, add and remove associations.
+* View all registered boats, Geofences and associations. 
+* View all registered entries and exits for all associations.
+* Display the list of all registered alerts (in progress and returned)
+* Display all positions of a given vessel in a specific time interval 
+* Display the status of all vessels associated with a given Geofence (with relative dwell time in minutes for those inside). 
+* Recharge a user's credit.
+
+#### ‘user’ role
+Corresponds to the user who owns boats. Can:
+* Send the instant data of a boat owned by him (sending costs 0.025 tokens). 
+* View all associations for his boats. 
+* Display the status of all your own boats associated with a given Geofence (with relative dwell time in minutes for those inside) 
+* Display the list of all your registered alerts (in progress and returned)
+* Display your remaining credit
 
 ## Requisiti
 Assicurarsi di avere già installati:
